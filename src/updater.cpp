@@ -4,6 +4,8 @@
 
 #include "gitversion.h"
 
+#if defined(AUTOUPDATER_ENABLED)
+
 static const wchar_t* UPDATE_SERVER = L"update.bf1942.hu";
 static const unsigned short UPDATE_SERVER_PORT = 0; // default
 static bool UPDATE_SERVER_HTTPS = true;
@@ -30,6 +32,8 @@ static const unsigned char update_publickey_release[crypto_sign_PUBLICKEYBYTES] 
     0x5c, 0xb6, 0xd6, 0x97, 0xbf, 0xf8, 0xb2, 0xfd,
     0xb2, 0xbb, 0xd5, 0x93, 0xe9, 0x7c, 0xb0, 0x68
 };
+
+#endif // AUTOUPDATER_ENABLED
 
 /// <summary>
 /// Stores info about update to a single file
@@ -124,6 +128,7 @@ int compare_version(std::wstring older, std::wstring newer)
     return 0; // versions are equal
 }
 
+#if defined(AUTOUPDATER_ENABLED)
 
 static wchar_t temp_dir[MAX_PATH];
 static bool cleanup_temp_dir()
@@ -582,3 +587,15 @@ void updater_client_startup()
     event_update_check_done = CreateEvent(0, TRUE, FALSE, 0);
     CreateThread(0, 0, updater_thread, 0, 0, 0);
 }
+
+#else
+
+void updater_wait_for_updating()
+{
+}
+
+void updater_client_startup()
+{
+}
+
+#endif // AUTOUPDATER_ENABLED

@@ -6,6 +6,7 @@ set(TARGET bf42plus)
 project(${TARGET} VERSION 1.0 LANGUAGES C CXX)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(AUTOUPDATER_ENABLED "Enable autoupdater" ON)
 
 
 add_library(${TARGET} SHARED)
@@ -59,6 +60,12 @@ target_compile_options( ${TARGET} PUBLIC
 #  /wd4201 # defined in .vcxproj
 )
 
+
+if (${AUTOUPDATER_ENABLED})
+  target_compile_definitions( ${TARGET} PUBLIC
+    AUTOUPDATER_ENABLED
+  )
+endif()
 
 target_link_directories( ${TARGET} PUBLIC
   ${CMAKE_CURRENT_LIST_DIR}/libs/libsodium
