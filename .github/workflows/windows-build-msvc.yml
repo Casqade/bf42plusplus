@@ -1,0 +1,63 @@
+name: Build (Windows MSVC)
+
+on:
+  push:
+    paths-ignore:
+      - '**/README.md'
+
+  pull_request:
+
+jobs:
+  build-msvc:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: ["Release"]
+        shared_libs_enabled: ["ON"]
+
+        config:
+        - {
+            os: windows-latest,
+            cc: "cl",
+            cxx: "cl",
+            arch: "x86",
+            cmake-arch-args: "-T host=x86 -A Win32"
+          }
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'true'
+
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+
+    - name: Configure CMake
+      run: >
+        cmake
+        -S ${{ github.workspace }}
+        -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DBUILD_SHARED_LIBS=${{ matrix.shared_libs_enabled }}
+
+    - name: Build
+      run: >
+        cmake
+        --build ${{ steps.strings.outputs.build-output-dir }}
+        --config ${{ matrix.build_type }}
+
+    - name: Upload Build Artifact
+      if: matrix.shared_libs_enabled == 'OFF'
+      uses: actions/upload-artifact@v4
+      with:
+        name: 'windows-msvc-${{ matrix.config.arch }}'
+        path: '${{ steps.strings.outputs.build-output-dir }}\${{ matrix.build_type }}/*.dll'
+        if-no-files-found: error
+        compression-level: 9
+
