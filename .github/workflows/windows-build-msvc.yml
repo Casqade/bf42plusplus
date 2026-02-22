@@ -47,6 +47,9 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DBUILD_SHARED_LIBS=${{ matrix.shared_libs_enabled }}
 
+    - name: Generate gitversion header
+      run: cmd /c gen-gitversion.bat
+
     - name: Build
       run: >
         cmake
