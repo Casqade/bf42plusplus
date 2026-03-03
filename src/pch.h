@@ -37,9 +37,6 @@
 
 #include <intrin.h>
 
-#define SODIUM_STATIC
-#include <sodium.h>
-
 #include "../res/resource.h"
 
 #include "util.h"

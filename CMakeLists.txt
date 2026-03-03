@@ -6,7 +6,6 @@ set(TARGET bf42plus)
 project(${TARGET} VERSION 1.0 LANGUAGES C CXX)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-option(AUTOUPDATER_ENABLED "Enable autoupdater" ON)
 
 
 add_library(${TARGET} SHARED)
@@ -30,6 +29,8 @@ target_sources( ${TARGET} PRIVATE
   src/settings.cpp
   src/updater.cpp
   src/util.cpp
+
+  src/blake2b/blake2b-ref.c
 
   res/bf42plus.def
 )
@@ -63,24 +64,11 @@ target_compile_options( ${TARGET} PUBLIC
 )
 
 
-if (${AUTOUPDATER_ENABLED})
-  target_compile_definitions( ${TARGET} PUBLIC
-    AUTOUPDATER_ENABLED
-  )
-endif()
-
-target_link_directories( ${TARGET} PUBLIC
-  ${CMAKE_CURRENT_LIST_DIR}/libs/libsodium
-)
-
-
 target_link_libraries( ${TARGET} PUBLIC
   kernel32
   user32
-  winhttp
   shell32
   Shlwapi
-  libsodium
 )
 
 

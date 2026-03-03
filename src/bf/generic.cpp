@@ -1,4 +1,5 @@
 #include "../pch.h"
+#include "../blake2b/blake2.h"
 
 // disable warnings about unreferenced parameters, uninitialized object variables, __asm blocks, ...
 #pragma warning(push)
@@ -205,11 +206,10 @@ bool __stdcall getStringFromRegistry_hook(const char* key, const char* valueName
         return ok;
     }
 
-    bool useMachineGuid = false;
+    bool generateNewKey = false;
     if (!ok) {
         // Reading CD key from registry failed, use alternate methods for obtaining an unique ID
-        useMachineGuid = true;
-        ok = true;
+        generateNewKey = true;
     }
     else {
         // Check if the key is a public key.
@@ -226,22 +226,23 @@ bool __stdcall getStringFromRegistry_hook(const char* key, const char* valueName
             // If the keyhash was found in the list, do not use it
             // Extra strcmp is needed because lower_bound is used instead of binary_search
             if (it != publicKeyhashes.end() && strcmp(*it, keyhash) == 0) {
-                useMachineGuid = true;
+                generateNewKey = true;
             }
         }
     }
 
-    if (useMachineGuid) {
-        // Use windows installation ID as a base for key generation
-        char guid[40];
+    if (generateNewKey) {
+        // Use a sequence of timestamps as a base for key generation
+        uint32_t guid[10];
         DWORD guid_size = sizeof(guid);
-        if (GetMachineGUID((unsigned char*)guid, &guid_size)) {
+
+        for ( size_t i {}; i < 10; ++i )
+            guid[i] = __rdtsc();
+
             // The hash of the installation id is converted into a string containing a 22 digit decimal number
-            
-            // Hash the installation ID, use the 96 bits of the result as 3 32 bit integers
-            sodium_init();
+
             uint32_t temp[3];
-            crypto_generichash((unsigned char*)temp, sizeof(temp), (unsigned char*)guid, guid_size, 0, 0);
+            blake2(temp, sizeof(temp), guid, guid_size, 0, 0);
 
             // convert the three integers into three 10 character decimal numbers
             char tempstr[3][12];
@@ -251,8 +252,16 @@ bool __stdcall getStringFromRegistry_hook(const char* key, const char* valueName
             // The output buffer in the caller is always 40 bytes.
             snprintf(output, 23, "%s%s%s\n", tempstr[0] + 3, tempstr[1] + 2, tempstr[2] + 3);
             *outlength = strlen(output) + 1; // outlength always includes the zero terminator
-        }
+
         debuglogt("new key: %s\n", output);
+
+        if (!ok) { // don't overwrite user public key
+            HKEY hKey;
+            if ( RegCreateKey(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Electronic Arts\\EA Games\\Battlefield 1942", &hKey) == ERROR_SUCCESS )
+                RegSetValueA(hKey, "ergc", REG_SZ, output, *outlength);
+
+            ok = true;
+        }
     }
     return ok;
 }

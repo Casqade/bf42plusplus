@@ -267,14 +267,6 @@ void patch_lower_nametags_when_close()
         });
 }
 
-void patch_WindowWin32__init_hook_for_updating()
-{
-    BEGIN_ASM_CODE(a)
-        mov ecx, updater_wait_for_updating
-        call ecx
-    MOVE_CODE_AND_ADD_CODE(a, 0x00632478, 9, HOOK_ADD_ORIGINAL_AFTER);
-}
-
 void patch_add_plus_version_to_accept_ack()
 {
     // This patch adds a marker and the current mod version to the
@@ -630,7 +622,6 @@ void bfhook_init()
         patch_drop_actions();
     }
 
-    patch_WindowWin32__init_hook_for_updating();
     patch_add_plus_version_to_accept_ack();
     patch_showFPS_more_precision_on_averages();
     patch_key_reading_to_silently_fail();

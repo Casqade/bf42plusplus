@@ -5,28 +5,6 @@
 #include <string>
 #include <vector>
 
-class HTTPClient
-{
-	HINTERNET session;
-	HINTERNET connect;
-	HINTERNET request;
-	bool isHTTPS;
-	DWORD secureFailFlags;
-	DWORD lastError;
-
-public:
-	HTTPClient() : session(0), connect(0), request(0), isHTTPS(false), secureFailFlags(0), lastError(0) {};
-	~HTTPClient();
-	bool Init(const std::wstring hostname, unsigned short port = 0, bool https = false, int timeout = 0, std::optional<std::wstring> agent = std::nullopt);
-	void reset();
-	bool GET(const std::wstring path);
-	int status();
-	bool data(std::vector<char>& data);
-	bool text(std::wstring& text);
-	DWORD getLastError() const { return lastError; };
-private:
-	static VOID CALLBACK statusCallback(HINTERNET hInternet, DWORD_PTR dwContext, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength);
-};
 
 inline std::string& replaceAll(std::string& str, const std::string& oldstr, const std::string& newstr) {
 	if (!oldstr.empty()) {
@@ -67,6 +45,3 @@ struct StringCompareNoCase {
 };
 
 uint8_t crc8(uint8_t* data, size_t length);
-
-// Reads the Windows MachineGuid from the registry, output buffer must be atleast 40 bytes
-bool GetMachineGUID(BYTE* output, DWORD* size);

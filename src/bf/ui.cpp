@@ -382,7 +382,7 @@ void meme::BfMap::onAddBuddyButtonClicked(int selectedPlayerid)
         uint32_t newcolor;
         if (GetAsyncKeyState(VK_LSHIFT) & 0x8000 || g_settings.presetBuddyColors.value.empty()) {
             // if shift is pressed while add buddy button is clicked, assign a random color to the selected buddy
-            newcolor = randombytes_random() & 0xffffff;
+            newcolor = __rdtsc() & 0xffffff;
         }
         else {
             // get the color from the higher bits of res
