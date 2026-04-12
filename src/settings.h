@@ -179,14 +179,6 @@ public:
         L"general", L"enable3DControlPointMap",
         L"; Enable 3D map showing controlpoints. In multiplayer it is only enabled if the server allows it.",
         0, false };
-    BoolSetting crashCreateFullDump = {
-        L"general", L"crashCreateFullDump",
-        L"; When the game crashes create a full memory dump, which are much larger (500MB+).",
-        0, false };
-    IntSetting crashDumpsToKeep = {
-        L"general", L"crashDumpsToKeep",
-        L"; Number of crash dumps to keep. Set to 0 to never delete dumps.",
-        0, 5 };
     BoolSetting fasterMapchange = {
         L"general", L"fasterMapchange",
         L"; Restart the game faster when the map is changing.",
