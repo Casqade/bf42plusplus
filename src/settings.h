@@ -196,6 +196,10 @@ public:
         L"general", L"hitIndicatorTime",
         L"; Sets the time it takes for the hit indicator to disappear. Default is 1 second, 0 disables the indicator.",
         0, 1.0 };
+    BoolSetting disableArchiveOnlyMode = {
+        L"general", L"disableArchiveOnlyMode",
+        L"; Allows the game to load unpacked archive data from game dir like BF1942_r executable does.",
+        0, false };
 };
 
 extern Settings g_settings;

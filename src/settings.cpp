@@ -159,6 +159,7 @@ Settings::Settings()
         &wrapChat,
         &screenshotFormat,
         &hitIndicatorTime,
+        &disableArchiveOnlyMode,
     };
 }
 

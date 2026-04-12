@@ -620,6 +620,92 @@ static void patch_add_debug_for_network_errors() {
     MOVE_CODE_AND_ADD_CODE(a, 0x004B4045, 5, HOOK_DISCARD_ORIGINAL);
 }
 
+static void patch_disable_archive_only_mode() {
+
+//    FileManager::open()
+    BEGIN_ASM_CODE(a)
+        mov eax, [esp+0xCC]
+        mov ecx, [ebp+0x14]
+        mov edx, [ecx]
+        push eax
+        mov eax, [esp+0xCC]
+        push eax
+        push 2
+        lea eax, [esp+0x20]
+        push eax
+        call [edx+0xC] // m_baseSystem->open()
+        mov esi, eax
+        test esi, esi
+        jnz return_stream
+
+        lea eax, [esp+0x30]
+        push eax
+        mov eax, 0x625317
+        jmp eax // file doesn't exist, fallback to original FileManager::findArchives()
+
+    return_stream:
+        mov eax, 0x62543B
+        jmp eax
+    MOVE_CODE_AND_ADD_CODE(a, 0x00625312, 5, HOOK_DISCARD_ORIGINAL);
+
+
+//    skip isArchiveOnlyMode check;
+//    at this point the file doesn't exist anyway
+//    75 -> EB
+    patchBytes( 0x62536B, { 0xEB } );
+
+
+//    FileManager::fileExists()
+    BEGIN_ASM_CODE(b)
+        mov ecx, [ebx+0x14]
+        mov edx, [ecx]
+        lea eax, [esp+0x10]
+        push eax
+        call [edx+0x10] // m_baseSystem->fileExists()
+        test al, al
+        jnz return_true
+
+        lea eax, [esp+0x2C]
+        push eax
+        mov ecx, ebx
+        mov eax, 0x624C40
+        call eax // FileManager::findArchives()
+        mov edi, eax
+        test edi, edi
+        jnz find_in_archive
+
+        mov eax, 0x6255CD // continue
+        jmp eax
+
+    find_in_archive:
+      mov eax, 0x625592
+      jmp eax
+
+    return_true:
+      mov eax, 0x62560A
+      jmp eax
+    MOVE_CODE_AND_ADD_CODE(b, 0x00625580, 5, HOOK_DISCARD_ORIGINAL);
+
+
+//    FileManager::findFiles() call m_baseSystem->findFiles() first
+    BEGIN_ASM_CODE(c)
+        mov dword ptr [esp+0x78], esi // save path string reference
+        mov eax, 0x626115
+        jmp eax
+    MOVE_CODE_AND_ADD_CODE(c, 0x00625F21, 8, HOOK_ADD_ORIGINAL_BEFORE);
+
+//    FileManager::findFiles() jump back to skipped this->findAllMatchingArchives()
+    BEGIN_ASM_CODE(d)
+        mov esi, [esp+0x78] // restore path string reference
+        mov eax, 0x625F29
+        jmp eax
+    MOVE_CODE_AND_ADD_CODE(d, 0x0062615A, 5, HOOK_DISCARD_ORIGINAL);
+
+//    FileManager::findFiles()
+//    don't call m_baseSystem->findFiles() again
+    nop_bytes(0x006260A7, 4); // 3B F7 74 5B -> nops
+}
+
 void bfhook_init()
 {
     init_hooksystem(NULL);
@@ -644,6 +730,8 @@ void bfhook_init()
         patch_higher_precision_fpu();
         patch_drop_actions();
     }
+
+    if (g_settings.disableArchiveOnlyMode) patch_disable_archive_only_mode();
 
     patch_add_plus_version_to_accept_ack();
     patch_showFPS_more_precision_on_averages();
