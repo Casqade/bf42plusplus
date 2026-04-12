@@ -427,14 +427,22 @@ void patch_fix_glitchy_projectile_pickup()
     MOVE_CODE_AND_ADD_CODE(b, 0x004F85C7, 5, HOOK_DISCARD_ORIGINAL);
 }
 
-static void __fastcall debugcallback(unsigned int level, bfs::string* modulename, bfs::string* filename, int line, bfs::string* expression, bfs::string* message, bfs::string* p5)
+static void __fastcall debugcallback(unsigned int level, bfs::string* modulename, bfs::string* filename, int line, bfs::string* expression, bfs::string* message, bfs::string* location)
 {
     static auto debugLevels = std::to_array<const char*>({"DEBUG", "INFO", "WARNING", "ASSERT", "ERROR", "LOG"});
     auto levelName = level < debugLevels.size() ? debugLevels[level] : "?";
 
-    debuglogt("[game] %s %s:%s:%d p3:%s message:'%s' expr:%s\n",
+    if (level == 3) // assert
+    {
+        debuglogt("[game] %s %s:%s:%d expr: '%s' message: '%s' location: '%s'\n",
+            levelName, modulename->c_str(), filename->c_str(),
+            line, expression->c_str(), message->c_str(), location->c_str());
+        return;
+    }
+
+    debuglogt("[game] %s %s:%s:%d message: '%s' location: '%s'\n",
         levelName, modulename->c_str(), filename->c_str(),
-        line, expression->c_str(), message->c_str(), p5->c_str());
+        line, message->c_str(), location->c_str());
 
     if (level == 4) { // error
         debuglogt("error message received, aborting! (%s)\n", message->c_str());
