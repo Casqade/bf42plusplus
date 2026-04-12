@@ -706,6 +706,76 @@ static void patch_disable_archive_only_mode() {
     nop_bytes(0x006260A7, 4); // 3B F7 74 5B -> nops
 }
 
+static void patch_enable_zip_archive_support() {
+
+//    this->m_stream->seek(Current, bytesToSkip) ->
+//    this->m_stream->skip(bytesToSkip)
+//    6A 01 -> 90 90
+//       28 -> 14
+
+//    ref2::io::ZipArchive::readFile()
+    nop_bytes(  0x637FBA, 2); // bf1942_r: 0x6E8D62
+    patchBytes( 0x637FBE, { 0x14 } );       // bf1942_r: 0x6E8D66
+
+//    ref2::io::ZipArchive::readDirectory()
+    nop_bytes(  0x63835B, 2); // bf1942_r: 0x6E90E4
+    patchBytes( 0x63835F, { 0x14 } );       // bf1942_r: 0x6E90ED
+
+//    ZipReadStream::init() unused code, probably not present in BF1942.exe
+//    nop_bytes( 0x??????, 2 ); // bf1942_r: 0x6E87E3
+//    patchBytes( 0x??????, { 0x14 } );       // bf1942_r: 0x6E87E7
+
+//    ref2::io::ZipArchive::readDirectory()
+//    fix only one entry being read from directory
+    nop_bytes(0x00638344, 5); // E9 CD FE FF FF -> nops
+
+//    ref2::io::ZipArchive::readFile()
+//    return bytesRead >= entry->header.compressed_size;
+  BEGIN_ASM_CODE(b)
+      cmp eax, [esi+0x2C]
+      pop ebp
+      mov [edi], eax
+      pop edi
+      pop esi
+      setge al
+  MOVE_CODE_AND_ADD_CODE(b, 0x006380C3, 10, HOOK_DISCARD_ORIGINAL);
+
+
+//    ref2::io::ZipArchive::findFiles()
+//    TODO: the method is so broken there's too much assembly to write.
+//          In short, it should behave like FlatArchive::findFiles(),
+//          e.g. push dirs to the list if not in recursive mode
+
+
+//    bf::Setup::initFileSystem()
+//    add zip archive handler
+    BEGIN_ASM_CODE(d)
+        mov edx, IID_IArchiveHandler // 0x0A483D7FC
+        mov ecx, ds:[0x9A4F50] // classManager
+        mov eax, [ecx]
+        push 0
+        push edx
+        mov edx, CID_ZipArchiveHandler // 0x0FFB1A6FA
+        push edx
+        call [eax+0x28] // classManager->createInstance()
+        test eax, eax
+        jz failed
+
+        mov ecx, ds:[0x9A2380] // fileManager
+        mov edx, [ecx]
+        push eax
+        push eax
+        call [edx+0x40] // fileManager->addArchiveHandler()
+
+        pop eax
+        mov ecx, eax // release SmartItf
+        mov eax, [ecx]
+        call [eax+0x4]
+
+    failed:
+    MOVE_CODE_AND_ADD_CODE(d, 0x004448E7, 6, HOOK_ADD_ORIGINAL_AFTER);
+}
+
 void bfhook_init()
 {
     init_hooksystem(NULL);
