@@ -5,6 +5,8 @@
 enum ClassID {
     CID_BFSoldierTemplate = 0x9493,
     CID_ProjectileTemplate = 0x9495,
+
+    CID_ZipArchiveHandler = 0x0FFB1A6FA,
 };
 
 enum InterfaceID {
@@ -12,6 +14,8 @@ enum InterfaceID {
     IID_IPlayerControlObjectTemplate = 0xc4c4,
     IID_IPlayerControlObject = 0xc4c5,
     IID_ITextureHandler = 500009,
+
+    IID_IArchiveHandler = 0x0A483D7FC,
 };
 
 class IBase {
