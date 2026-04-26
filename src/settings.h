@@ -1,6 +1,15 @@
 #pragma once
+
 #include <string>
+#include <vector>
+
+#include "util.h"
+
+#include "bf/ui.h"
+#include "bf/stl.h"
+
 #include "SimpleIni.h"
+
 
 struct Setting {
     const wchar_t* section;
@@ -204,6 +213,8 @@ public:
 
 extern Settings g_settings;
 
+
+class ObjectTemplate;
 
 class ServerSettings {
 public:

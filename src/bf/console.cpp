@@ -1,4 +1,8 @@
-#include "../pch.h"
+#include "console.h"
+#include "../settings.h"
+
+#include <format>
+#include <sstream>
 
 static bfs::list<ConsoleObject*> customCommands;
 

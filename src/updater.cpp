@@ -1,8 +1,16 @@
-#include "pch.h"
+#include "updater.h"
+
+#define WIN32_LEAN_AND_MEAN
+#define _CRT_SECURE_NO_WARNINGS
+#include <windows.h>
 #include <shellapi.h>
 #include <Shlwapi.h>
 
 #include "gitversion.h"
+
+#include <string>
+#include <sstream>
+
 
 const wchar_t* get_update_release_channel()
 {

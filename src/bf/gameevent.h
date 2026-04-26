@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include "generic.h"
+#include "../util.h"
 
 enum GameEventID {
     BF_HUDTextEvent = 0x01,

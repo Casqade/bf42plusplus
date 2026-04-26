@@ -1,4 +1,15 @@
-#include "pch.h"
+#include "debug.h"
+#include "bf/stl.h"
+#include "bf/object.h"
+
+#include <cstdio>
+
+//#define WINVER 0x0502
+//#define _WIN32_WINNT 0x0502
+#define WIN32_LEAN_AND_MEAN
+#define _CRT_SECURE_NO_WARNINGS
+#include <windows.h>
+
 
 char* getTimestamp()
 {

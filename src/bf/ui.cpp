@@ -1,4 +1,11 @@
-#include "../pch.h"
+#include "ui.h"
+#include "gameevent.h"
+
+#include "../hooks.h"
+#include "../settings.h"
+
+#include <intrin.h>
+
 
 bool spawnTextForced = false;
 bool disconnectMessageForced = false;

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+
+
 // A version number used for versioning customizations in the game protocol.
 // Increment this on breaking network protocol change
 const uint8_t PLUS_PROTOCOL_VERSION = 2;

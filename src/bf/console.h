@@ -1,5 +1,8 @@
 #pragma once
 
+#include "stl.h"
+#include "generic.h"
+
 // no idea what these are, see ConsoleObject::getObjectRange
 struct ConsoleObjectRange {
     int min, max;

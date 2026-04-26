@@ -2,8 +2,18 @@
 // DllMain is called first, that hooks the game's main() function
 // the hooked main function initializes all the other hooks, then calls the original main function
 
-#include "pch.h"
+#include "hooks.h"
+#include "bfhook.h"
+#include "debug.h"
+#include "updater.h"
+#include "settings.h"
+#include "bf/console.h"
+
+#define WIN32_LEAN_AND_MEAN
+#define _CRT_SECURE_NO_WARNINGS
+#include <windows.h>
 #include <tlhelp32.h>
+
 
 typedef int __stdcall WinMain_t(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd);
 WinMain_t* WinMain_orig = 0;

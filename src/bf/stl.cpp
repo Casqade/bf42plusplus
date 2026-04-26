@@ -1,4 +1,4 @@
-#include "../pch.h"
+#include "stl.h"
 
 // disable warnings about unreferenced parameters, uninitialized object variables, __asm blocks, ...
 #pragma warning(push)

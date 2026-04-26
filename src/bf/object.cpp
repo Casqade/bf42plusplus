@@ -1,4 +1,9 @@
-#include "../pch.h"
+#include "object.h"
+
+#include "../debug.h"
+
+#include <map>
+
 
 // disable warnings about unreferenced parameters, uninitialized object variables, __asm blocks, ...
 #pragma warning(push)

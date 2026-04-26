@@ -1,5 +1,9 @@
 #pragma once
+
+#include "generic.h"
+
 #include <cstdint>
+
 
 enum VehicleCategory {
     VCLand = 0,

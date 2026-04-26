@@ -1,5 +1,6 @@
 #pragma once
 #include "stl.h"
+#include "generic.h"
 
 const uint32_t DefaultBuddyColor = 0x00ff00;
 

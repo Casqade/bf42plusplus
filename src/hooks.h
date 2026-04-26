@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <assert.h>
+#include <stdio.h>
 #include <stdint.h>
 
 // gcc specific hook stuff for linux server

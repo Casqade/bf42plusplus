@@ -1,4 +1,15 @@
-#include "pch.h"
+#include "hooks.h"
+#include "updater.h"
+#include "bf/renderer.h"
+#include "bf/gameevent.h"
+#include "util.h"
+#include "debug.h"
+#include "settings.h"
+
+#include <array>
+#include <string>
+#include <cstring>
+
 
 #pragma warning(disable: 4740)
 

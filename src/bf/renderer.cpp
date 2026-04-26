@@ -1,10 +1,18 @@
-#include "../pch.h"
+#include "renderer.h"
+#include "object.h"
+
+#include "../debug.h"
+#include "../hooks.h"
+#include "../settings.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
 #include <fpng.cpp>
 #include <fpng.h>
+
+#include <format>
+
 
 // disable warnings about unreferenced parameters, uninitialized object variables, __asm blocks, ...
 #pragma warning(push)

@@ -1,5 +1,14 @@
-#include "../pch.h"
+#include "generic.h"
+#include "object.h"
+
+#include "../debug.h"
+#include "../hooks.h"
+#include "../settings.h"
+
 #include "../blake2b/blake2.h"
+
+#include <array>
+
 
 // disable warnings about unreferenced parameters, uninitialized object variables, __asm blocks, ...
 #pragma warning(push)

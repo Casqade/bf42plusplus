@@ -27,7 +27,6 @@ target_sources( ${TARGET} PRIVATE
   src/debug.cpp
   src/dllmain.cpp
   src/hooks.c
-#  src/pch.cpp
   src/settings.cpp
   src/updater.cpp
   src/util.cpp

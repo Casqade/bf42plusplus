@@ -1,6 +1,10 @@
 #pragma once
+
+#include "stl.h"
+
 #include <cstdint>
 #include <string>
+
 
 enum ClassID {
     CID_BFSoldierTemplate = 0x9493,

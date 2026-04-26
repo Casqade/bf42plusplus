@@ -1,4 +1,14 @@
-#include "../pch.h"
+#include "gameevent.h"
+#include "generic.h"
+#include "object.h"
+#include "net.h"
+#include "ui.h"
+
+#include "../debug.h"
+#include "../hooks.h"
+#include "../bfhook.h"
+#include "../settings.h"
+
 
 static int currentMessagePlayerID = -1;
 static int currentMessageSecondaryPlayerID = -1;
