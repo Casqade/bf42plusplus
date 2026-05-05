@@ -824,7 +824,7 @@ void patch_BlackScreen_r()
 void patch_show_version_in_menu_r()
 {
     auto get_version = LAMBDA_FASTCALL(bfs::string*, (bfs::string & s), {
-        auto ss = std::string("BF1942 Community Debug v1.6; bf42_r++ v") + WideStringToISO88591(get_build_version());
+        auto ss = std::string("BF1942 Community Debug v1.6; bf42_r++ v") + WideStringToISO88591(build_version);
         s = ss;
         return &s;
     });
