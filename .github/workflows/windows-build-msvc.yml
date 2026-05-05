@@ -17,6 +17,7 @@ jobs:
       matrix:
         build_type: ["Release"]
         shared_libs_enabled: ["ON"]
+        target_bf1942_r: ["OFF", "ON"]
 
         config:
         - {
@@ -38,6 +39,10 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+        if [[ "${{ matrix.target_bf1942_r }}" == "OFF" ]]; then
+            echo "ARTIFACT_POSTFIX=" >> $GITHUB_ENV
+        elif [[ "${{ matrix.target_bf1942_r }}" == "ON" ]]; then
+            echo "ARTIFACT_POSTFIX=-profiling" >> $GITHUB_ENV
 
     - name: Configure CMake
       run: >
@@ -46,10 +51,9 @@ jobs:
         -B ${{ steps.strings.outputs.build-output-dir }}
         ${{ matrix.config.cmake-arch-args }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DBUILD_FOR_BF1942_R=${{ matrix.target_bf1942_r }}
+        -DWITH_PROFILER=${{ matrix.target_bf1942_r }}
         -DBUILD_SHARED_LIBS=${{ matrix.shared_libs_enabled }}
-
-    - name: Generate gitversion header
-      run: cmd /c gen-gitversion.bat
 
     - name: Build
       run: >
@@ -66,7 +70,7 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: 'windows-msvc-${{ matrix.config.arch }}'
+        name: 'windows-msvc-${{ matrix.config.arch }}${{ env.ARTIFACT_POSTFIX }}'
         path: |
           ${{ steps.strings.outputs.build-output-dir }}/*.exe
           ${{ steps.strings.outputs.build-output-dir }}/*.dll
