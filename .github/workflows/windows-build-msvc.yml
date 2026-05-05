@@ -43,6 +43,7 @@ jobs:
             echo "ARTIFACT_POSTFIX=" >> $GITHUB_ENV
         elif [[ "${{ matrix.target_bf1942_r }}" == "ON" ]]; then
             echo "ARTIFACT_POSTFIX=-profiling" >> $GITHUB_ENV
+        fi
 
     - name: Configure CMake
       run: >
