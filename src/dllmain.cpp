@@ -5,7 +5,7 @@
 #include "hooks.h"
 #include "bfhook.h"
 #include "debug.h"
-#include "updater.h"
+#include "version.h"
 #include "settings.h"
 #include "profiling.h"
 #include "bf/console.h"
@@ -21,7 +21,7 @@ WinMain_t* WinMain_orig = 0;
 int __stdcall WinMain_hook(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 
-    debuglogt("BF1942 started, plus version: %ls parameters: %s\n", get_build_version(), lpCmdLine);
+    debuglogt("BF1942 started, plus version: %ls parameters: %s\n", build_version, lpCmdLine);
 
     g_settings.load();
 

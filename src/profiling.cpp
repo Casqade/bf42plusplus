@@ -791,7 +791,6 @@ void attach_profiler()
     profile_startTimer();
     profile_stopTimer();
     profile_startGlobalTimer();
-    profile_stopGlobalTimer();
 
     profile_game_load();
     profile_main_loop();

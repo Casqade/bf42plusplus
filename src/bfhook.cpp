@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include "hooks.h"
-#include "updater.h"
+#include "version.h"
 #include "bf/renderer.h"
 #include "bf/gameevent.h"
 #include "util.h"
@@ -12,15 +12,21 @@
 #include <array>
 #include <string>
 #include <cstring>
+#include <sstream>
 
 
 #pragma warning(disable: 4740)
 
+
+#ifndef TARGET_BF1942_R
+
+// A version number used for versioning customizations in the game protocol.
+// Increment this on breaking network protocol change
+const uint8_t PLUS_PROTOCOL_VERSION = 2;
+
 int g_actionsToDrop = 0;
 bool g_skipLoadingStaticObjects = false;
 
-
-#ifndef TARGET_BF1942_R
 
 void patch_Particle_handleUpdate_crash()
 {
@@ -151,7 +157,7 @@ void patch_master_address()
 void patch_show_version_in_menu()
 {
     auto get_version = LAMBDA_FASTCALL(bfs::string*, (bfs::string & s), {
-        auto ss = std::string("BF1942 v1.61; bf42++ v") + WideStringToISO88591(get_build_version());
+        auto ss = std::string("BF1942 v1.61; bf42++ v") + WideStringToISO88591(build_version);
         s = ss;
         return &s;
     });
@@ -282,6 +288,20 @@ void patch_lower_nametags_when_close()
         0xE9, 0xD9, 0x5C, 0x24, 0x3C, 0xB9, 0xFA, 0xFA, 0xFA, 0xFA, 0x8B, 0x14, 0x95, 0x14,
         0x76, 0x95, 0x00, 0x89, 0x54, 0x24, 0x14, 0x8B, 0xCB
         });
+}
+
+static void get_build_version_components(uint8_t& major, uint8_t& minor, uint8_t& patch, uint8_t& build)
+{
+    uint16_t tmp;
+    major = minor = patch = build = 0;
+    auto ver = std::stringstream(build_version_full);
+    ver >> tmp; major = (uint8_t)tmp;
+    ver.get(); // skip delimiter
+    ver >> tmp; minor = (uint8_t)tmp;
+    ver.get(); // skip delimiter
+    ver >> tmp; patch = (uint8_t)tmp;
+    ver.get(); // skip delimiter
+    ver >> tmp; build = (uint8_t)tmp;
 }
 
 void patch_add_plus_version_to_accept_ack()

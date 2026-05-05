@@ -1,3 +1,2 @@
 EXPORTS
 	DirectSoundCreate8 @11
-	_build_version_dummy DATA

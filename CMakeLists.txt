@@ -33,7 +33,6 @@ target_sources( ${TARGET} PRIVATE
   src/dllmain.cpp
   src/hooks.c
   src/settings.cpp
-  src/updater.cpp
   src/util.cpp
 
   src/blake2b/blake2b-ref.c
