@@ -69,7 +69,13 @@ public:
     Hash <bfs::string, bfs::string> typeconversions;
     bfs::map<bfs::string, ConsoleObject*> nameToObject;
     bfs::list<ConsoleObject*> objects;
+
+#ifndef TARGET_BF1942_R
     static ConsoleObjects* getSingleton() { return reinterpret_cast<ConsoleObjects*>(0x009AB610); };
+#else
+    static ConsoleObjects* getSingleton() { return reinterpret_cast<ConsoleObjects*>(0x00C565E0); };
+#endif
+
     bool registerConsoleObjects(bfs::list<ConsoleObject*>& list);
 };
 

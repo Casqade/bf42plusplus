@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "updater.h"
 #include "settings.h"
+#include "profiling.h"
 #include "bf/console.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -41,22 +42,16 @@ int __stdcall WinMain_hook(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR l
 #endif
 
     if (forceWindowMode) {
+#ifndef TARGET_BF1942_R
         nop_bytes(0x00442686, 2); // force 0 in Setup__setFullScreen
+#else
+        nop_bytes(0x004715D6, 2); // force 0 in Setup__setFullScreen
+#endif
     }
 
     register_custom_console_commands();
 
-#if 0
-    // For debugging the unhandled exception filter
-    __try {
-        return WinMain_orig(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-    }
-    __except (unhandledExceptionFilter(GetExceptionInformation())) {
-        OutputDebugStringA("exception filter executed");
-    }
-#else
     return WinMain_orig(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
-#endif
 }
 
 extern "C" __declspec(dllexport)
@@ -89,14 +84,22 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
-            // Check if we are running in the correct executable. This address has the call to main()
+
+#ifndef TARGET_BF1942_R
             if (memcmp((void*)0x00804DA6, "\xE8\x95\x19\xC0\xFF", 5) != 0)
+#else
+            if (memcmp((void*)0x0092227C, "\xE8\x84\xA1\xAE\xFF", 5) != 0)
+#endif
             {
                 MessageBoxA(NULL, "bf42++ is being injected into unsupported executable. The injection will be cancelled", NULL, MB_OK);
                 break;
             }
 
+#ifndef TARGET_BF1942_R
             WinMain_orig = (WinMain_t*)modify_call(0x00804DA6, (void*)WinMain_hook);
+#else
+            WinMain_orig = (WinMain_t*)modify_call(0x0092227C, (void*)WinMain_hook);
+#endif
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:

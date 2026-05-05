@@ -1,3 +1,5 @@
+#include <windows.h>
+
 #include "hooks.h"
 #include "updater.h"
 #include "bf/renderer.h"
@@ -5,6 +7,7 @@
 #include "util.h"
 #include "debug.h"
 #include "settings.h"
+#include "profiling.h"
 
 #include <array>
 #include <string>
@@ -16,11 +19,8 @@
 int g_actionsToDrop = 0;
 bool g_skipLoadingStaticObjects = false;
 
-void patch_BlackScreen()
-{
-    const char* blackScreenPath = "bf42++BlackScreen.exe %s";
-    patchBytes(0x4550E9, blackScreenPath);
-}
+
+#ifndef TARGET_BF1942_R
 
 void patch_Particle_handleUpdate_crash()
 {
@@ -787,9 +787,136 @@ static void patch_enable_zip_archive_support() {
     MOVE_CODE_AND_ADD_CODE(d, 0x004448E7, 6, HOOK_ADD_ORIGINAL_AFTER);
 }
 
+void patch_BlackScreen()
+{
+    const char* blackScreenPath = "bf42++BlackScreen.exe %s";
+    patchBytes(0x004550E9, blackScreenPath);
+}
+
+#else
+
+void patch_BlackScreen_r()
+{
+    const char* blackScreenPath = "bf42_r++BlackScreen.exe %s";
+    patchBytes(0x0048CE41, blackScreenPath);
+}
+
+void patch_show_version_in_menu_r()
+{
+    auto get_version = LAMBDA_FASTCALL(bfs::string*, (bfs::string & s), {
+        auto ss = std::string("BF1942 Community Debug v1.6; bf42_r++ v") + WideStringToISO88591(get_build_version());
+        s = ss;
+        return &s;
+    });
+
+    inject_call(0x00499CBD, 5, reinterpret_cast<void*>(get_version), 1);
+}
+
+#endif // TARGET_BF1942_R
+
+
+void waitUntilTick(double& currentTime, const double& nextTick)
+{
+    using getExactTime = double();
+
+    static getExactTime* p_getExactTime =
+    #ifndef TARGET_BF1942_R
+        (getExactTime*) 0x00581960;
+    #else
+        (getExactTime*) 0x00602944;
+    #endif
+
+    do
+    {
+        currentTime = p_getExactTime();
+
+        if ( currentTime + g_settings.maxTimeToBusyWait.value < nextTick )
+            ::Sleep(1);
+
+    } while ( currentTime < nextTick );
+}
+
+void patch_busyWait()
+{
+    struct TimerResolutionSetter
+    {
+        TimerResolutionSetter()
+        {
+            timeBeginPeriod(g_settings.minTimerResolution.value);
+        }
+
+        ~TimerResolutionSetter()
+        {
+            timeEndPeriod(g_settings.minTimerResolution.value);
+        }
+
+    } static timerResolutionSetter;
+
+
+#ifndef TARGET_BF1942_R
+
+    BEGIN_ASM_CODE(a)
+
+        lea eax, [ebp-0x30]
+        push eax // nextTick
+
+        lea eax, [ebp-0x28]
+        push eax // currentTime
+
+        mov eax, waitUntilTick
+        call eax
+        pop eax
+        pop eax
+
+        fstp st
+        lea eax, [ebp-0x28]
+        fld qword ptr [eax] // currentTime
+
+        mov eax, 0x0044ACB0
+        jmp eax
+
+    MOVE_CODE_AND_ADD_CODE(a, 0x0044AC8F, 6, HOOK_DISCARD_ORIGINAL);
+
+//    skip dedicated server sleep since we forced it already
+    patchBytes(0x0044AF5A, {0xEB}); // 74 -> EB
+
+#else
+
+    BEGIN_ASM_CODE(a)
+
+        lea eax, [ebp-0xC]
+        push eax // nextTick
+
+        lea eax, [ebp-0x14]
+        push eax // currentTime
+
+        mov eax, waitUntilTick
+        call eax
+        pop eax
+        pop eax
+
+        fstp st
+        lea eax, [ebp-0x14]
+        fld qword ptr [eax] // currentTime
+
+        mov eax, 0x0047EECC
+        jmp eax
+
+    MOVE_CODE_AND_ADD_CODE(a, 0x0047EEC2, 5, HOOK_DISCARD_ORIGINAL);
+
+
+//    skip dedicated server sleep since we forced it already
+    patchBytes(0x0047F316, {0xEB}); // 74 -> EB
+
+#endif // TARGET_BF1942_R
+}
+
+
 void bfhook_init()
 {
     init_hooksystem(NULL);
+
+#ifndef TARGET_BF1942_R
 
     if (GetEnvironmentVariableW(L"BF42PLUSPLUS_INJECTED", NULL, 0) != 0)
         patch_BlackScreen();
@@ -837,6 +964,20 @@ void bfhook_init()
     patch_Game_load_to_skip_loading_StaticObjects();
 
     patch_add_debug_for_network_errors();
+
+#else
+
+    patch_BlackScreen_r();
+    patch_show_version_in_menu_r();
+
+#if defined(TRACY_ENABLE)
+    attach_profiler();
+#endif
+
+#endif // TARGET_BF1942_R
+
+    if (g_settings.minimizeBusyWait.value)
+        patch_busyWait();
 
     dynbuffer_make_nonwritable();
 }

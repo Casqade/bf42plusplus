@@ -209,6 +209,31 @@ public:
         L"general", L"disableArchiveOnlyMode",
         L"; Allows the game to load unpacked archive data from game dir like BF1942_r executable does.",
         0, false };
+    BoolSetting minimizeBusyWait = {
+        L"general", L"minimizeBusyWait",
+        L"; The game uses busy waiting to synchronize ticks defined by game.lockFps.\n"
+        L"; It puts unnecessary load on the CPU, leading to increased laptop battery drain\n"
+        L"; and loud fan noises even on modern PCs (e.g. 1ms of actual work, 7ms of waiting).\n"
+        L"; This setting minimizes the time spent in busy waiting.\n"
+        L"; Turn it off if you experience stuttering, or increase maxTimeToBusyWait value.",
+        0, false };
+    FloatSetting maxTimeToBusyWait = {
+        L"general", L"maxTimeToBusyWait",
+        L"; Controls the maximum time the game is allowed to spend busy-waiting.\n"
+        L"; minimizeBusyWait. Default: 0.0015 (1.5ms).",
+        0, 0.0015 };
+    IntSetting minTimerResolution = {
+        L"general", L"minTimerResolution",
+        L"; Sets minimum timer resolution for minimizeBusyWait setting.\n"
+        L"; Affects the accuracy of Sleep() function.\n"
+        L"; Higher values may lead to stutters. Default: 1.",
+        0, 1 };
+#if defined(TRACY_ENABLE)
+    BoolSetting profilerAutoStart = {
+        L"general", L"profilerAutoStart",
+        L"; Activates profiler automatically.",
+        0, false };
+#endif
 };
 
 extern Settings g_settings;

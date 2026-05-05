@@ -64,8 +64,13 @@ static bool InjectDLL(const std::wstring& dllPath, HANDLE processHandle)
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
+#ifndef TARGET_BF1942_R
   std::wstring exePath = L"BF1942.exe";
   std::wstring dllPath = L"bf42++.dll";
+#else
+  std::wstring exePath = L"BF1942_r.exe";
+  std::wstring dllPath = L"bf42_r++.dll";
+#endif
 
   SetEnvironmentVariable(L"BF42PLUSPLUS_INJECTED", L"");
 

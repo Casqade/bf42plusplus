@@ -129,12 +129,24 @@ static bool debuglogOpenFailed = false;
 static bool maybeOpenDebuglog()
 {
     if (debuglogOpenFailed) return false;
-    CreateDirectory(L"logs", 0);
-    DeleteFile(L"logs/bf42++_debug.3.log");
-    MoveFile(L"logs/bf42++_debug.2.log", L"logs/bf42++_debug.3.log");
-    MoveFile(L"logs/bf42++_debug.1.log", L"logs/bf42++_debug.2.log");
-    MoveFile(L"logs/bf42++_debug.log", L"logs/bf42++_debug.1.log");
-    debuglogHandle = fopen("logs/bf42++_debug.log", "w");
+
+    #define LOGS_DIR   "logs/"
+    #define LOGS_DIRW L"logs/"
+
+#ifndef TARGET_BF1942_R
+    #define LOG_FILENAME_PREFIX LOGS_DIR "bf42++_debug"
+    #define LOG_FILENAME_PREFIXW LOGS_DIRW L"bf42++_debug"
+#else
+    #define LOG_FILENAME_PREFIX LOGS_DIR "bf42_r++_debug"
+    #define LOG_FILENAME_PREFIXW LOGS_DIRW L"bf42_r++_debug"
+#endif
+
+    CreateDirectory(LOGS_DIRW, 0);
+    DeleteFile(LOG_FILENAME_PREFIXW L".3.log");
+    MoveFile(LOG_FILENAME_PREFIXW L".2.log", LOG_FILENAME_PREFIXW L".3.log");
+    MoveFile(LOG_FILENAME_PREFIXW L".1.log", LOG_FILENAME_PREFIXW L".2.log");
+    MoveFile(LOG_FILENAME_PREFIXW L".log", LOG_FILENAME_PREFIXW L".1.log");
+    debuglogHandle = fopen(LOG_FILENAME_PREFIX ".log", "w");
     if (!debuglogHandle) {
         debuglogOpenFailed = true;
         return false;

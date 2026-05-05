@@ -6,9 +6,14 @@ set(TARGET bf42plusplus)
 project(${TARGET} VERSION 1.0 LANGUAGES C CXX)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(BUILD_FOR_BF1942_R "Build bf42++ for BF1942_r.exe" OFF)
 
 # GetAsyncKeyState is detected as keylogging behaviour by AVs
 option(REDUCE_AV_SCORE "Remove functionality suspicious to AVs" ON)
+
+if (${BUILD_FOR_BF1942_R})
+  option(WITH_PROFILER "Build with Tracy profiler" OFF)
+endif()
 
 
 add_library(${TARGET} SHARED)
@@ -37,6 +42,21 @@ target_sources( ${TARGET} PRIVATE
   res/bf42plus.rc
 )
 
+if (${WITH_PROFILER})
+  target_sources( ${TARGET} PRIVATE
+    src/profiling.cpp
+    libs/tracy/TracyClient.cpp
+  )
+
+  target_compile_definitions( ${TARGET} PRIVATE
+    TRACY_ENABLE
+    TRACY_CALLSTACK = 3
+    TRACY_NO_SYSTEM_TRACING
+    TRACY_IGNORE_MEMORY_FAULTS
+  )
+
+endif()
+
 
 set_target_properties( ${TARGET} PROPERTIES
   C_STANDARD_REQUIRED ON
@@ -44,8 +64,6 @@ set_target_properties( ${TARGET} PROPERTIES
 
   CXX_STANDARD_REQUIRED ON
   CXX_STANDARD 20
-
-  RUNTIME_OUTPUT_NAME "bf42++"
 )
 
 
@@ -78,6 +96,7 @@ target_link_libraries( ${TARGET} PUBLIC
   user32
   shell32
   Shlwapi
+  Winmm
 )
 
 
@@ -86,7 +105,7 @@ target_include_directories( ${TARGET} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/libs/fpng>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/libs/stb>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/libs/simpleini>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/libs/libsodium/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/libs/tracy/tracy>
 )
 
 
@@ -102,17 +121,58 @@ set_target_properties( bf42plusplus_loader PROPERTIES
   CXX_STANDARD_REQUIRED ON
   CXX_STANDARD 20
 
-  RUNTIME_OUTPUT_NAME "bf42++"
+  WIN32_EXECUTABLE TRUE
 )
+
 
 target_compile_definitions( bf42plusplus_loader PUBLIC
   UNICODE
   _UNICODE
 )
 
-target_include_directories( bf42plusplus_loader PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/libs/simpleini>
-)
+
+if (NOT ${BUILD_FOR_BF1942_R})
+
+  set_target_properties( ${TARGET} PROPERTIES
+    RUNTIME_OUTPUT_NAME "bf42++"
+  )
+
+  set_target_properties( bf42plusplus_loader PROPERTIES
+    RUNTIME_OUTPUT_NAME "bf42++"
+  )
+
+  set(BLACKSCREEN_TARGET_EXE_NAME "bf42++.exe" CACHE STRING "" FORCE)
+
+else()
+
+  set_target_properties( ${TARGET} PROPERTIES
+    RUNTIME_OUTPUT_NAME "bf42_r++"
+  )
+
+  set_target_properties( bf42plusplus_loader PROPERTIES
+    RUNTIME_OUTPUT_NAME "bf42_r++"
+  )
+
+  target_compile_definitions( ${TARGET} PUBLIC
+    TARGET_BF1942_R
+  )
+
+  target_compile_definitions( bf42plusplus_loader PUBLIC
+    TARGET_BF1942_R
+  )
+
+  set(BLACKSCREEN_TARGET_EXE_NAME "bf42_r++.exe" CACHE STRING "" FORCE)
+endif()
 
 
 add_subdirectory(BlackScreen)
+
+if (NOT ${BUILD_FOR_BF1942_R})
+  set_target_properties( BlackScreen PROPERTIES
+    RUNTIME_OUTPUT_NAME "bf42++BlackScreen"
+  )
+else()
+  set_target_properties( BlackScreen PROPERTIES
+    RUNTIME_OUTPUT_NAME "bf42_r++BlackScreen"
+  )
+endif()

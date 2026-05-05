@@ -45,7 +45,11 @@ namespace meme {
 
 class BfMenu {
 public:
+#ifndef TARGET_BF1942_R
     static BfMenu* getSingleton() { return *(BfMenu**)0x00973AB8; };
+#else
+    static BfMenu* getSingleton() { return *(BfMenu**)0x00C1DE90; };
+#endif
     static BFPlayer* getLocalPlayer();
     bool isInitialized() { return ((bool*)this)[0x17d]; };
     meme::BfMap* getMap() { return *(meme::BfMap**)((intptr_t)this + 0x6E4); };

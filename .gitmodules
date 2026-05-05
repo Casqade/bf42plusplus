@@ -1,4 +1,4 @@
 [submodule "BlackScreen"]
 	path = BlackScreen
 	url = https://github.com/Casqade/BF1942_BlackScreen
-	branch = bf42plusplus
+	branch = main

@@ -12,17 +12,28 @@ static bfs::list<ConsoleObject*> customCommands;
 
 __declspec(naked) bool ConsoleObjects::registerConsoleObjects(bfs::list<ConsoleObject*>& list)
 {
+#ifndef TARGET_BF1942_R
     _asm mov eax, 0x005AC970
+#else
+    _asm mov eax, 0x00630DA6
+#endif
     _asm jmp eax
 }
 
 __declspec(naked) bfs::string ConsoleObject::execute(bfs::string* argv, int argc)
 {
+#ifndef TARGET_BF1942_R
     _asm mov eax, 0x005ACC30
+#else
+    _asm mov eax, 0x00630FBE
+#endif
     _asm jmp eax
 }
 
 #pragma warning(pop)
+
+
+#ifndef TARGET_BF1942_R
 
 class ConsoleObjectBoolSetting : public ConsoleObject {
 protected:
@@ -805,9 +816,16 @@ public:
 };
 ConsoleObjectPlusPoke commandPlusPoke;
 
+#else
+#endif // #ifndef TARGET_BF1942_R
+
+
 void register_custom_console_commands()
 {
+#ifndef TARGET_BF1942_R
     commandPlusScreenshotFormat.updatePossibleValues(g_settings.screenshotFormat.getPossibleValues());
+#else
+#endif
 
     ConsoleObjects::getSingleton()->registerConsoleObjects(customCommands);
     customCommands.clear();

@@ -11,7 +11,11 @@
 
 Settings g_settings;
 
+#ifndef TARGET_BF1942_R
 static const char* CONFIG_FILE = "bf42++.ini";
+#else
+static const char* CONFIG_FILE = "bf42_r++.ini";
+#endif
 
 inline void StringSetting::load(const CSimpleIni& ini)
 {
@@ -167,6 +171,12 @@ Settings::Settings()
         &screenshotFormat,
         &hitIndicatorTime,
         &disableArchiveOnlyMode,
+        &minimizeBusyWait,
+        &maxTimeToBusyWait,
+        &minTimerResolution,
+#if defined(TRACY_ENABLE)
+        &profilerAutoStart,
+#endif
     };
 }
 
