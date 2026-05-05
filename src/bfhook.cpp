@@ -17,16 +17,14 @@
 
 #pragma warning(disable: 4740)
 
+int g_actionsToDrop = 0;
+bool g_skipLoadingStaticObjects = false;
 
 #ifndef TARGET_BF1942_R
 
 // A version number used for versioning customizations in the game protocol.
 // Increment this on breaking network protocol change
 const uint8_t PLUS_PROTOCOL_VERSION = 2;
-
-int g_actionsToDrop = 0;
-bool g_skipLoadingStaticObjects = false;
-
 
 void patch_Particle_handleUpdate_crash()
 {
