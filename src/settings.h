@@ -231,7 +231,8 @@ public:
 #if defined(TRACY_ENABLE)
     BoolSetting profilerAutoStart = {
         L"general", L"profilerAutoStart",
-        L"; Activates profiler automatically.",
+        L"; Activates profiler automatically."
+        L"; Otherwise needs to be activated using console command Profiler.enable 1",
         0, false };
 #endif
 };
