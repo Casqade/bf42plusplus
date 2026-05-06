@@ -833,7 +833,7 @@ void patch_show_version_in_menu_r()
 #endif // TARGET_BF1942_R
 
 
-void waitUntilTick(double& currentTime, const double& nextTick)
+void __cdecl waitUntilTick(double& currentTime, const double& nextTick)
 {
     using getExactTime = double();
 
@@ -875,10 +875,10 @@ void patch_busyWait()
 
     BEGIN_ASM_CODE(a)
 
-        lea eax, [ebp-0x30]
+        lea eax, [esp+0x8]
         push eax // nextTick
 
-        lea eax, [ebp-0x28]
+        lea eax, [esp+0x14] // = 0x8 + sizeof(double*) + sizeof(double)
         push eax // currentTime
 
         mov eax, waitUntilTick
@@ -887,7 +887,7 @@ void patch_busyWait()
         pop eax
 
         fstp st
-        lea eax, [ebp-0x28]
+        lea eax, [esp+0x10]
         fld qword ptr [eax] // currentTime
 
         mov eax, 0x0044ACB0
