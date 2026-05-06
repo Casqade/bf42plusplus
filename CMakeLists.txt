@@ -81,6 +81,7 @@ endif()
 
 target_compile_options( ${TARGET} PUBLIC
   /Zc:threadSafeInit
+  /arch:IA32 # enforce x87 usage
 
   /wd4584 # multiple inheritance warnings
 #  /wd4731 # frame pointer modified in inline assembly
