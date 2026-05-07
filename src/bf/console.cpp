@@ -33,8 +33,6 @@ __declspec(naked) bfs::string ConsoleObject::execute(bfs::string* argv, int argc
 #pragma warning(pop)
 
 
-#ifndef TARGET_BF1942_R
-
 class ConsoleObjectBoolSetting : public ConsoleObject {
 protected:
     bool result;
@@ -171,6 +169,8 @@ public:
         argdesc[0] = enumList.c_str();
     }
 };
+
+#ifndef TARGET_BF1942_R
 
 class ConsoleObjectPlusShowConnectsInChat : public ConsoleObjectBoolSetting {
 public:
