@@ -819,6 +819,27 @@ ConsoleObjectPlusPoke commandPlusPoke;
 #else
 #endif // #ifndef TARGET_BF1942_R
 
+class ConsoleObjectPlusMaxBusyWaitTime : public ConsoleObjectFloatSetting {
+public:
+    ConsoleObjectPlusMaxBusyWaitTime() : ConsoleObjectFloatSetting() {
+        functionname = "maxBusyWaitTime";
+    };
+    virtual void* executeObjectMethod() {
+        if (argcount == 0) {
+            result = g_settings.maxTimeToBusyWait.value;
+            hasreturnvalue = true;
+            return &result;
+        }
+        else if (argcount == 1) {
+            g_settings.maxTimeToBusyWait.value = arg;
+            g_settings.save(false);
+            hasreturnvalue = false;
+        }
+        return 0;
+    };
+};
+ConsoleObjectPlusMaxBusyWaitTime commandPlusMaxBusyWaitTime;
+
 
 void register_custom_console_commands()
 {

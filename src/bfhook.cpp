@@ -848,6 +848,9 @@ void __cdecl waitUntilTick(double& currentTime, const double& nextTick)
     {
         currentTime = p_getExactTime();
 
+        if ( g_settings.maxTimeToBusyWait.value < 0.f )
+          continue;
+
         if ( currentTime + g_settings.maxTimeToBusyWait.value < nextTick )
             ::Sleep(1);
 
@@ -994,8 +997,7 @@ void bfhook_init()
 
 #endif // TARGET_BF1942_R
 
-    if (g_settings.minimizeBusyWait.value)
-        patch_busyWait();
+    patch_busyWait();
 
     dynbuffer_make_nonwritable();
 }

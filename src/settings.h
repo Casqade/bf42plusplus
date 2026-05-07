@@ -209,24 +209,24 @@ public:
         L"general", L"disableArchiveOnlyMode",
         L"; Allows the game to load unpacked archive data from game dir like BF1942_r executable does.",
         0, false };
-    BoolSetting minimizeBusyWait = {
-        L"general", L"minimizeBusyWait",
+    FloatSetting maxTimeToBusyWait = {
+        L"general", L"maxTimeToBusyWait",
         L"; The game uses busy waiting to synchronize ticks defined by game.lockFps.\n"
         L"; It puts unnecessary load on the CPU, leading to increased laptop battery drain\n"
         L"; and loud fan noises even on modern PCs (e.g. 1ms of actual work, 7ms of waiting).\n"
-        L"; This setting minimizes the time spent in busy waiting.\n"
-        L"; Turn it off if you experience stuttering, or increase maxTimeToBusyWait value.",
-        0, false };
-    FloatSetting maxTimeToBusyWait = {
-        L"general", L"maxTimeToBusyWait",
-        L"; Controls the maximum time the game is allowed to spend busy-waiting.\n"
-        L"; minimizeBusyWait. Default: 0.0015 (1.5ms).",
+        L"; This setting controls the maximum time the game is allowed to spend busy-waiting.\n"
+        L"; The preceding time to busy-waiting period will be be spent sleeping in 1ms steps.\n"
+        L"; Decrease value to reduce CPU load.\n"
+        L"; Increase it if you experience stuttering as a result.\n"
+        L"; Values of <=1ms will lead to excessive sleeping and may reduce frame rate stability.\n"
+        L"; Set to -1.0 for vanilla behaviour.\n"
+        L"; Default value: 0.0015 (1.5ms).",
         0, 0.0015 };
     IntSetting minTimerResolution = {
         L"general", L"minTimerResolution",
-        L"; Sets minimum timer resolution for minimizeBusyWait setting.\n"
+        L"; Sets minimum timer resolution for maxTimeToBusyWait setting.\n"
         L"; Affects the accuracy of Sleep() function.\n"
-        L"; Higher values may lead to stutters. Default: 1.",
+        L"; Higher values may lead to stutters. Default: 1 (ms).",
         0, 1 };
 #if defined(TRACY_ENABLE)
     BoolSetting profilerAutoStart = {

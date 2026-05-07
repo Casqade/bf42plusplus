@@ -171,7 +171,6 @@ Settings::Settings()
         &screenshotFormat,
         &hitIndicatorTime,
         &disableArchiveOnlyMode,
-        &minimizeBusyWait,
         &maxTimeToBusyWait,
         &minTimerResolution,
 #if defined(TRACY_ENABLE)
