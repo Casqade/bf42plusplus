@@ -12,6 +12,30 @@ static void PrintMessage(const std::wstring& message)
   MessageBox(NULL, message.c_str(), NULL, MB_OK);
 }
 
+static LPCWSTR FormatSystemMessage(DWORD errorCode)
+{
+  static WCHAR messageBuf[256] {};
+
+  auto result = FormatMessage(
+    FORMAT_MESSAGE_FROM_SYSTEM |
+    FORMAT_MESSAGE_IGNORE_INSERTS,
+    NULL, errorCode, 0,
+    messageBuf, sizeof(messageBuf),
+    NULL );
+
+  if (result != 0)
+    return messageBuf;
+
+  return nullptr;
+}
+
+static void PrintLastErrorMessage(const std::wstring& message)
+{
+  DWORD errorCode = GetLastError();
+  PrintMessage(message);
+  PrintMessage(FormatSystemMessage(errorCode));
+}
+
 static bool FileExists(const std::wstring& inFileAddress)
 {
   return GetFileAttributesW(inFileAddress.c_str()) != INVALID_FILE_ATTRIBUTES;
@@ -33,13 +57,13 @@ static bool InjectDLL(const std::wstring& dllPath, HANDLE processHandle)
 
   if (allocatedMemoryAddress == NULL)
   {
-    PrintMessage(L"Failed to allocate memory in the remote process");
+    PrintLastErrorMessage(L"Failed to allocate memory in the remote process");
     return false;
   }
 
   if (WriteProcessMemory(processHandle, allocatedMemoryAddress, dllPath.c_str(), dllAddressSize, NULL) != TRUE)
   {
-    PrintMessage(L"Failed to write to the allocated memory in the remote process");
+    PrintLastErrorMessage(L"Failed to write to the allocated memory in the remote process");
     return false;
   }
 
@@ -48,7 +72,7 @@ static bool InjectDLL(const std::wstring& dllPath, HANDLE processHandle)
 
   if (threadHandle == NULL)
   {
-    PrintMessage(L"Failed to create a remote thread in the target process");
+    PrintLastErrorMessage(L"Failed to create a remote thread in the target process");
     return false;
   }
 
@@ -81,13 +105,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
   std::wstring commandLine = exePath + L" " + lpCmdLine;
 
-  DWORD processId = CreateProcess(
-    NULL, &commandLine.front(), NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
+  BOOL success = CreateProcess(
+    exePath.c_str(), &commandLine.front(), NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
 
-  if (processId != 0 && InjectDLL(dllPath.c_str(), pi.hProcess))
-    ResumeThread(pi.hThread);
+  if (success == FALSE || InjectDLL(dllPath.c_str(), pi.hProcess) == false)
+  {
+    std::wstring message = L"Failed to inject '" + dllPath + L"' into '" + exePath + L"'";
+
+    if (success == FALSE)
+    {
+      PrintLastErrorMessage(message);
+      return 0;
+    }
+    else
+    {
+      PrintMessage(message);
+      TerminateProcess(pi.hProcess, 0);
+    }
+  }
   else
-    PrintMessage(L"Failed to inject '" + dllPath + L"' into '" + exePath + L"'");
+    ResumeThread(pi.hThread);
+
+  CloseHandle(pi.hThread);
+  CloseHandle(pi.hProcess);
 
   return 0;
 }
