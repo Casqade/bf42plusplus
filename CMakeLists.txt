@@ -26,6 +26,7 @@ target_sources( ${TARGET} PRIVATE
   src/bf/net.cpp
   src/bf/object.cpp
   src/bf/renderer.cpp
+  src/bf/skinning.cpp
   src/bf/stl.cpp
   src/bf/ui.cpp
 

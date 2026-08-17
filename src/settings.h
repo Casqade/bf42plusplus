@@ -205,6 +205,13 @@ public:
         L"general", L"hitIndicatorTime",
         L"; Sets the time it takes for the hit indicator to disappear. Default is 1 second, 0 disables the indicator.",
         0, 1.0 };
+    BoolSetting fixAnimatedMeshLighting = {
+        L"general", L"fixAnimatedMeshLighting",
+        L"; Fixes dynamic lighting on animated meshes (soldiers, vehicles). Normally their\n"
+        L"; normals are frozen in the pose the mesh was built in, so the lit side of the mesh\n"
+        L"; follows the animation around instead of staying towards the sun.\n"
+        L"; The matching vertex shader is built into the mod, shaders.rfa is left alone.",
+        0, true };
     BoolSetting disableArchiveOnlyMode = {
         L"general", L"disableArchiveOnlyMode",
         L"; Allows the game to load unpacked archive data from game dir like BF1942_r executable does.",

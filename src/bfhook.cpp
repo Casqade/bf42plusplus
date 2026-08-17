@@ -4,6 +4,7 @@
 #include "version.h"
 #include "bf/renderer.h"
 #include "bf/gameevent.h"
+#include "bf/skinning.h"
 #include "util.h"
 #include "debug.h"
 #include "settings.h"
@@ -972,6 +973,7 @@ void bfhook_init()
     gameevent_hook_init();
     ui_hook_init();
     renderer_hook_init();
+    skinning_hook_init();
 
     patch_install_bf_debug_callback_handler();
 

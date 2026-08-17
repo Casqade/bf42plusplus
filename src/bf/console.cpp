@@ -1,5 +1,6 @@
 #include "console.h"
 #include "../settings.h"
+#include "../hooks.h" // patchBytes(), used by the _DEBUG only plus.crash command
 
 #include <format>
 #include <sstream>

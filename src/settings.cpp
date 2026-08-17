@@ -170,6 +170,7 @@ Settings::Settings()
         &wrapChat,
         &screenshotFormat,
         &hitIndicatorTime,
+        &fixAnimatedMeshLighting,
         &disableArchiveOnlyMode,
         &maxTimeToBusyWait,
         &minTimerResolution,
