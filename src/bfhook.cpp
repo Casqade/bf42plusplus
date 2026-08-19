@@ -810,6 +810,9 @@ void patch_BlackScreen()
 {
     const char* blackScreenPath = "bf42++BlackScreen.exe %s";
     patchBytes(0x004550E9, blackScreenPath);
+
+    const char* bf42PlusPlusPath = "bf42++.exe";
+    patchBytes(0x00455152, bf42PlusPlusPath);
 }
 
 #else
@@ -818,6 +821,9 @@ void patch_BlackScreen_r()
 {
     const char* blackScreenPath = "bf42_r++BlackScreen.exe %s";
     patchBytes(0x0048CE41, blackScreenPath);
+
+    const char* bf42PlusPlusPath = "bf42_r++.exe";
+    patchBytes(0x0048CE95, bf42PlusPlusPath);
 }
 
 void patch_show_version_in_menu_r()
