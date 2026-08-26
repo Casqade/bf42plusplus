@@ -179,15 +179,15 @@ public:
     BoolSetting enable3DMineMap = {
         L"general", L"enable3DMineMap",
         L"; Enable 3D map showing friendly mines. In multiplayer it is only enabled if the server allows it.",
-        0, false };
+        0, true };
     BoolSetting enable3DSupplyMap = {
         L"general", L"enable3DSupplyMap",
         L"; Enable 3D map showing heal, ammo, repair points. In multiplayer it is only enabled if the server allows it.",
-        0, false };
+        0, true };
     BoolSetting enable3DControlPointMap = {
         L"general", L"enable3DControlPointMap",
         L"; Enable 3D map showing controlpoints. In multiplayer it is only enabled if the server allows it.",
-        0, false };
+        0, true };
     BoolSetting fasterMapchange = {
         L"general", L"fasterMapchange",
         L"; Restart the game faster when the map is changing.",
@@ -267,6 +267,7 @@ public:
 
     struct ControlPoint3DMap {
         bool allow = false;
+        int distanceRadiusFactor = 4;
     } controlPoint3DMap;
 
     struct Custom3DMap {

@@ -384,7 +384,7 @@ void hook_Renderer_draw_1()
             Vec3 screenPos;
             auto position = controlPoint->getAbsolutePosition() + Vec3(0, 10, 0);
             float radius = *(float*)((uintptr_t)tmpl + 0x2c8);
-            const int minDistance = radius * 4;
+            const int minDistance = radius * g_serverSettings.controlPoint3DMap.distanceRadiusFactor;
 
             float distance = (position - playerPos).lengthSquare();
             if (distance > minDistance * minDistance) {
