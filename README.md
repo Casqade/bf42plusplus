@@ -1,12 +1,16 @@
 ## Battlefield 1942 client patches
+
+bf42++ is a successor to discontinued [bf42plus](https://github.com/uuuzbf/bf42plus). 
+
 This mod provides several [fixes](#bugfixes) and [improvements](#improvements) to Battlefield 1942. It also has some [additional features](#optional-features) however these are all disabled by default. It is also possible to [set custom colors](#buddy-colors) for players on the buddy list.
 
-The current version is `1.3.4`. You can see your version in the main menu in the bottom left corner.
+The current version is `2.0`. You can see your version in the main menu in the bottom left corner.
 
 ### Installation
-Download the [latest release](https://github.com/uuuzbf/bf42plus/releases) and copy `dsound.dll` into your game directory.
 
-_If you already have a modded `dsound.dll` in your game directory, rename it to `dsound_next.dll`, it will keep working!_
+Two options:
+- For those familiar with original bf42plus, download `dsound.dll` from the [latest release](https://github.com/casqade/bf42plusplus/releases) and copy it into your game directory. If you use modded `dsound.dll` audio wrapper, rename it to `dsound_next.dll`
+- `bf42++` provides an alternative way: `bf42++.exe` loader runs the game and injects `bf42++.dll` into it. `bf42++BlackScreen.exe` handles map & mod changes. Download `bf42++.zip` from [latest release](https://github.com/casqade/bf42plusplus/releases) and put all three files into your game directory. Use `bf42++.exe` to launch the game (vanilla cmd args supported). This option isn't compatible with `dsound.dll` way, so make sure to remove it from your game dir. If you're using `dsound.dll` as HRTF/DSOAL audio wrapper you are free to keep it without renaming as bf42++ has full support for it. Sidenote: `dsound.dll` and `bf42++.dll` in releases are identical, the difference is in the way they are injected into the game
 
 #### Missing MSVCP140.dll error
 If you get an error about missing MSVCP140.dll, install the following package from Microsoft:
@@ -14,23 +18,26 @@ https://aka.ms/vs/17/release/vc_redist.x86.exe
 **Note that you have to install the 32 bit (x86) package on 64 bit Windows too!**
 
 #### Extra steps under Wine
-The mod works under Wine, but by default libraries placed next to executables aren't loaded. To fix this you have to run `winecfg`. On the `Applications` tab add `BF1942.exe`, then on the `Libraries` tab add `dsound` to the dll overrides.
+
+Original bf42plus note:
+- The mod works under Wine, but by default libraries placed next to executables aren't loaded. To fix this you have to run `winecfg`. On the `Applications` tab add `BF1942.exe`, then on the `Libraries` tab add `dsound` to the dll overrides.
+
+bf42++ was NOT tested under Wine so there's nothing I can help you with.
 
 ### Support
-If you have any issues with the mod or want to ask for bugfixes or features then you can do it here by opening an issue, in the [SiMPLE forum topic](https://team-simple.org/forum/viewtopic.php?id=10835) or on Discord by messaging me (uuuzbf).
+If you have any issues with the mod or want to ask for bugfixes or features then you can do it here by opening an [issue](https://github.com/Casqade/bf42plusplus/issues). 
 
 ### Configuration
-If you want to enable some optional features, take a look at `bf42plus.ini` in the game directory, it has explanations for each available setting. This file is automatically created after first launch.
+If you want to enable some optional features, take a look at `bf42++.ini` in the game directory, it has explanations for each available setting. This file is automatically created after first launch.
 
 Alternatively you can change the configuration from the game's ingame console, type `plus.` then tap TAB twice to see the available commands.
 
 ### Updater
-The DLL has a builtin updater, so it can replace itself with newer versions. When there is an update available, a window will appear on startup, with the details of the new update. You have the option to postpone updating or apply the update. The mod only sends the mod's version to the update server when checking for updates, no other data is transmitted.
 
-There is currently no option to disable update checking because the mod is still being actively developed and having people running outdated versions would defeat the purpose of the mod. All new future features/fixes that have any effect on the game will either be disabled by default or there will be the option to turn it off. Updates are cryptographically signed so if the update server is compromised its still not possible for an attacker to push out a malicious update, the update functionality will just be broken until the update server is restored. The update code is also designed to fail silently if it can't reach the update server.
+Original bf42plus had a built-in autoupdater, bf42++ has it removed so for a new update just repeat [Installation](#Installation) steps.
 
 ### Buddy colors
-You can now assign different colors to buddies by clicking the `ADD BUDDY` button on the scoreboard repeatedly. It cycles between 4 different colors, or if the SHIFT key is pressed it assigns random colors.
+You can now assign different colors to buddies by clicking the `ADD BUDDY` button on the scoreboard repeatedly. It cycles between 4 different colors.
 
 Another way to assign colors to buddies is to use the `plus.buddyColor`  command. You can specify colors in `#RRGGBB`, `#RGB` formats or a [webcolor name](https://www.w3schools.com/colors/colors_names.asp).
 
@@ -40,7 +47,7 @@ Some examples:
 - Don't forget to use quotes if the nickname has spaces: `plus.buddycolor "name with spaces" #ADD8E6`
 
 
-You can also change the buddy colors in `bf42plus.ini` in the `[buddycolors]` section.
+You can also change the buddy colors in `bf42++.ini` in the `[buddycolors]` section.
 
 ### Bugfixes
 - Fix crash when the game is minimized
@@ -53,6 +60,7 @@ You can also change the buddy colors in `bf42plus.ini` in the `[buddycolors]` se
 - Fix a loading screen crash caused by a bug in the game's memory allocator
 - Fix dead players showing as alive snipers after connecting to a server
 - Fix broken playernames breaking the middle kill message
+- Ahrkylien: Fix dynamic lighting on animated meshes
 
 ### Improvements
 - Speed up reconnecting to servers on map change
@@ -64,23 +72,15 @@ You can also change the buddy colors in `bf42plus.ini` in the `[buddycolors]` se
 - If you don't have a CD key in the registry, or it is a public one from the internet, a unique one is used
 
 ### Optional features
-These features are disabled by default. Edit `bf42plus.ini` in the game directory to enable them.
+These features are disabled by default. Edit `bf42++.ini` in the game directory to enable them.
 - Message when someone connects to the server (option `showConnectsInChat`)
 - Show player IDs in chat and/or in kill messages (option `showIDInChat` and `showIDInKills`)
 - Show player IDs in nametags (option `showIDInNametags`)
 - Show in the console who started a vote or voted (option `showVoteInConsole`)
-- You can start the game temporarily in windowed mode if u hold SHIFT while the game is starting and select Yes
 - You can fix the higher mouse sensitivity while moving by enabling `correctedLookSensitivity` option
-
-### Planned features
-- A 3D map like the one in BF:Vietnam
-- Settings GUI for changing options
-- Extending the game protocol to allow servers to create any static object
-- Colors in console
-- Better screenshots: timestamp in filename, png or jpg files, different save location(?)
-- Customizing ID display in chat and nametags
-- Improve windowed mode
-- Chat/kill logging to file
+- Reduce CPU load if you're using framerate lock. The vanilla game doesn't yield CPU time to operating system regardless of your framerate and always melts your CPU (and more importantly on laptops, drains the battery)
+- bf42++ offers experimental feature which allows using unpacked game archives in BF1942.exe the same way BF1942_r.exe does
+- bf42++ has bf42++_r variant for hooking BF1942_r debug binary (works the same way but supports only the second installation option). It has most of original features disabled, but it adds Tracy profiler integration so it's possible to profile which operations take most frame or map load time in the game
 
 ### Details about `plus.smootherGameplay` option
 In version `1.3.4`, a new option was added that may make the game run smoother and reduce the time between you pressing a key and the server processing it. The impact of this is far less than the server-side "reg patch", but it may improve your game experience a bit. It is also possible that it won't have any effect on your game.
@@ -110,3 +110,10 @@ I have been asked about how exactly I got all this information, so after looking
 - 2024-01-17: With all the information above and with some more research of the client code I figured out that the client's update rate is always slightly off because of bad floating point rounding when calculating frame times. Soldierr suggested that we either fix the client or speed up the server.
 - 2024-01-20: Soldierr made a patched BF1942.exe for testing that has the patched Direct3D::CreateDevice call to avoid the low FPU precision.
 - The second part that clears the buffer on death was added in 2024 april when I implemented this option in bf42plus.
+
+### Credits
+
+- [uuuzbf](https://github.com/uuuzbf), the original author of bf42plus and a lot of other stuff
+- [Ahrkylien](https://github.com/Ahrkylien) aka henk, for helping me & uuuz numerous times and his many tools and contributions
+- [ShadowGarden42](https://github.com/ShadowGarden42) aka FlameHaze, for "I think I deserve a contributor credit on this project too"
+- [BF1942 modding community](https://bfmods.com), the vault of knowledge and experience about BF1942 modding and my primary source of information before I started reverse engineering
