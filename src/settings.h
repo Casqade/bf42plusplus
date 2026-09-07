@@ -176,6 +176,17 @@ public:
         L"; Enables scaling of the mouse sensitivity in stationary MG42/Browning to be the same\n"
         L"; as the infantry sensitivity. Affects PCOs with category VCLand and type VTStationaryMG.",
         0, false };
+    BoolSetting dontBlockInputDuringFreeLook = {
+        L"general", L"dontBlockInputDuringFreeLook",
+        L"; In aircraft, the freelook button normally blocks pitch, roll and yaw\n"
+        L"; entirely, so only the throttle still responds while you look around.\n"
+        L"; This option keeps your keyboard and joystick flight axes working during\n"
+        L"; freelook. The mouse is deliberately left out, so looking around\n"
+        L"; never steers the plane at the same time.\n"
+        L"; In multiplayer your client stops reporting freelook while you are\n"
+        L"; flying, so the look axes stay local and the server has no means to tell\n"
+        L"; which way a pilot is looking, that's the only tradeoff.",
+        0, true };
     BoolSetting enable3DMineMap = {
         L"general", L"enable3DMineMap",
         L"; Enable 3D map showing friendly mines. In multiplayer it is only enabled if the server allows it.",

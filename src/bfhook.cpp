@@ -4,6 +4,7 @@
 #include "version.h"
 #include "bf/renderer.h"
 #include "bf/gameevent.h"
+#include "bf/input.h"
 #include "bf/skinning.h"
 #include "util.h"
 #include "debug.h"
@@ -287,6 +288,36 @@ void patch_lower_nametags_when_close()
         0xE9, 0xD9, 0x5C, 0x24, 0x3C, 0xB9, 0xFA, 0xFA, 0xFA, 0xFA, 0x8B, 0x14, 0x95, 0x14,
         0x76, 0x95, 0x00, 0x89, 0x54, 0x24, 0x14, 0x8B, 0xCB
         });
+}
+
+void patch_remove_freelook_flight_suppression()
+{
+    // Second half of the aircraft freelook fix; the first half lives in bf/input.cpp.
+    //
+    // sub_00407EC0 is BFPlayer vtable slot 12, the last thing that touches a player
+    // input frame before it reaches the control object. When the player is in an
+    // aircraft it takes a 0xF0-byte stack copy of the frame and zeroes either the
+    // flight axes or the look axes:
+    //
+    //   if (testInput(frame, PIMouseLook)) copy.Pitch = copy.Roll = copy.Yaw = 0;
+    //   else                               copy.MouseLookX = copy.MouseLookY = 0;
+    //   controlObject->vtbl[37](this, copy, dt);
+    //
+    // Unlike the sibling block in Setup::processPlayerInput this one has no
+    // game.mouseLook gate, so it fires unconditionally -- which is why setting
+    // game.mouseLook 0 has no visible effect. It also edits a copy, so the frame
+    // still looks untouched to anything watching upstream.
+    //
+    // Neutralise only the freelook branch. The else branch has to stay: it is what
+    // keeps the mouse out of the look axes when freelook is NOT held.
+    //
+    // 00407F28  83 E0 02   and eax, 2        ; start of the inlined setInput(PIPitch, 0)
+    //        ->  EB 61      jmp short 407F8B  ; straight to the shared tail call
+    //
+    // 00407F4B..00407F6A (a duplicated tail call the compiler emitted for the Yaw
+    // case) becomes dead. loc_00407F6D stays live -- it is the target of the jz at
+    // 00407F26, i.e. the not-holding-freelook path.
+    patchBytes(0x00407F28, { 0xEB, 0x61, 0x90 });
 }
 
 static void get_build_version_components(uint8_t& major, uint8_t& minor, uint8_t& patch, uint8_t& build)
@@ -975,7 +1006,10 @@ void bfhook_init()
     patch_fix_mine_warning_not_going_away();
     patch_fix_glitchy_projectile_pickup();
 
+    if (g_settings.dontBlockInputDuringFreeLook) patch_remove_freelook_flight_suppression();
+
     generic_hook_init();
+    input_hook_init();
     gameevent_hook_init();
     ui_hook_init();
     renderer_hook_init();

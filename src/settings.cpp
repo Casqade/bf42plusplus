@@ -163,6 +163,7 @@ Settings::Settings()
         &presetBuddyColors,
         &correctedLookSensitivity,
         &stationaryMGInfSensitivity,
+        &dontBlockInputDuringFreeLook,
         &enable3DMineMap,
         &enable3DSupplyMap,
         &enable3DControlPointMap,

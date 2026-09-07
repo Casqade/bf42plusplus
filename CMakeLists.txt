@@ -23,6 +23,7 @@ target_sources( ${TARGET} PRIVATE
   src/bf/console.cpp
   src/bf/gameevent.cpp
   src/bf/generic.cpp
+  src/bf/input.cpp
   src/bf/net.cpp
   src/bf/object.cpp
   src/bf/renderer.cpp

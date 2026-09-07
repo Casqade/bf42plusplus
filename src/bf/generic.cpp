@@ -1,4 +1,5 @@
 #include "generic.h"
+#include "input.h"
 #include "object.h"
 
 #include "../debug.h"
@@ -114,6 +115,28 @@ __declspec(naked) bool __stdcall getStringFromRegistry(const char* key, const ch
 void Game::addPlayerInput_hook(int playerid, PlayerInput* input)
 {
     // input can be modified here, the object will not be used after this function returns
+
+    // Restore the keyboard/joystick flight axes that the engine's freelook
+    // suppression just zeroed, and tell the ControlMap hook whether the local
+    // player is currently flying. Both queries happen here, on the main thread,
+    // so the input thread never has to walk the player/vehicle/template chain.
+    // See bf/input.cpp.
+    {
+        bool inAircraft = false;
+        IObject* vehicle = nullptr;
+        auto localPlayer = BFPlayer::getLocal();
+        bool isLocal = localPlayer && localPlayer->getId() == playerid;
+        if (isLocal) {
+            vehicle = localPlayer->getVehicle();
+            if (vehicle) {
+                if (auto pcoTmpl = (IPlayerControlObjectTemplate*)vehicle->getTemplate()
+                        ->queryInterface(IID_IPlayerControlObjectTemplate); pcoTmpl) {
+                    inAircraft = pcoTmpl->getVehicleCategory() == VCAir;
+                }
+            }
+            input_onLocalPlayerInput(input, inAircraft, vehicle);
+        }
+    }
 
     // The following is a fix for the issue that when stainding on-foot, the mouse
     // sensitivity is half compared to when you are moving. This is caused by some bug
