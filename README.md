@@ -114,6 +114,6 @@ I have been asked about how exactly I got all this information, so after looking
 ### Credits
 
 - [uuuzbf](https://github.com/uuuzbf), the original author of bf42plus and a lot of other stuff
-- [Ahrkylien](https://github.com/Ahrkylien) aka henk, for helping me & uuuz numerous times and his many tools and contributions
-- [ShadowGarden42](https://github.com/ShadowGarden42) aka FlameHaze, for "I think I deserve a contributor credit on this project too"
+- [Arkyliën](https://github.com/Ahrkylien) aka henk, for helping me & uuuz numerous times and his many tools and contributions
+- [ShadowGarden42](https://github.com/ShadowGarden42) aka FlameHaze, for distributing bf42++ to the gaming masses for testing, and going absolutely nuts over reducing bf42++'s malware score
 - [BF1942 modding community](https://bfmods.com), the vault of knowledge and experience about BF1942 modding and my primary source of information before I started reverse engineering
