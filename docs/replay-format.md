@@ -1,6 +1,7 @@
 # Replay format
 
-The file `recordReplays` writes, format version 5. The recorder is `src/replay.cpp`.
+The file `recordReplays` writes, format version 5. The recorder is `src/replay.cpp` and the
+`src/replay_*.cpp` files beside it; `src/replay_internal.h` says which writes what.
 
 A replay is what one client saw of a round: every game event the server sent it, and a 10 Hz
 sample of every object in its world. Nothing is decoded from the network stream. The recorder

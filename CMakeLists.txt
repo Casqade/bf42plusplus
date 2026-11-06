@@ -35,6 +35,11 @@ target_sources( ${TARGET} PRIVATE
   src/dllmain.cpp
   src/hooks.c
   src/replay.cpp
+  src/replay_events.cpp
+  src/replay_fire.cpp
+  src/replay_join.cpp
+  src/replay_objects.cpp
+  src/replay_parts.cpp
   src/settings.cpp
   src/util.cpp
 
