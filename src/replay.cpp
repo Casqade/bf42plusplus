@@ -113,7 +113,7 @@ void writeLine(const std::string& line)
 // File lifecycle
 // ---------------------------------------------------------------------------
 
-static bool replay_start()
+bool replay_start()
 {
     if (g_file) return true;
     if (!g_settings.recordReplays) return false;
@@ -175,17 +175,9 @@ void replay_stop()
 // Entry points
 // ---------------------------------------------------------------------------
 
-// Begin recording now, if the setting is on and no file is open. Called from
-// the console when plus.recordReplays is set, so the file opens the moment the
-// user types plus.recordReplays 1 instead of waiting for the next event/frame.
-void replay_begin()
-{
-    replay_start();
-}
-
 void replay_onEvent(GameEvent* event)
 {
-    const int type = event->getType();
+    int type = event->getType();
     // A new join: what the last one said, and what it made, no longer hold.
     // Let go first, so a file this event starts does not open with the last
     // server's level, players or objects.

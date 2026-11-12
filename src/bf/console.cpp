@@ -860,7 +860,7 @@ public:
             if (!g_settings.recordReplays.value)
                 replay_stop();
             else
-                replay_begin(); // open the file now, not on the next event/frame
+                replay_start(); // open the file now, not on the next event/frame
             hasreturnvalue = false;
         }
         return 0;

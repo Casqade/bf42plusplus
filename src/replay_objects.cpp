@@ -221,8 +221,8 @@ static void sampleHitMark(double t)
     if (!local) return;
     float v = 0.0f;
     if (safeCopy(&v, (const uint8_t*)local + 0x1cc, sizeof(v)) != sizeof(v) || !(v > 0.0f && v <= 1.0f)) return;
-    const double at = t - (1.0 - v);
-    const bool mark = at > g_hitLastAt + 0.05;
+    double at = t - (1.0 - v);
+    bool mark = at > g_hitLastAt + 0.05;
     g_hitLastAt = at;
     if (mark)
         writeLine(std::format("{{\"k\":\"hm\",\"t\":{:.3f},\"pid\":{},\"at\":{:.3f}}}", t, local->getId(), at));
@@ -255,7 +255,7 @@ void samplePlayers(double t)
         // The hull the controlled object hangs under, and the seat's place
         // after it (a hull's nested PlayerControlObjects take the ids after
         // its own; 0 is the root seat, and the soldier and camera are roots).
-        const int seat = rootNetId >= 0 && s.vehicleNetId >= rootNetId ? s.vehicleNetId - rootNetId : 0;
+        int seat = rootNetId >= 0 && s.vehicleNetId >= rootNetId ? s.vehicleNetId - rootNetId : 0;
         out += std::format("[{},{},{},{},{},{}]", pid, s.team, s.vehicleNetId, rootNetId, seat, s.triggers);
     }
     if (!out.empty()) writeLine(std::format("{{\"k\":\"p\",\"t\":{:.3f},\"p\":[{}]}}", t, out));
@@ -312,7 +312,7 @@ void sampleObjects(double t)
         Pos3 pos(m.position.x, m.position.y, m.position.z);
         Quat rot = toQuat(m);
         ArmorFields armor{};
-        const bool hasArmor = readArmor(obj, armor);
+        bool hasArmor = readArmor(obj, armor);
 
         auto prev = g_objects.find(netId);
         if (prev == g_objects.end()) {
@@ -388,10 +388,10 @@ void sampleTickets(double t)
         if (!verified) debuglogt("replay: ScoreManager does not match this BF1942.exe, tickets not recorded\n");
     }
     if (verified != 1) return;
-    const uintptr_t manager = readAt<uintptr_t>((void*)SCORE_MANAGER_PTR, 0);
+    uintptr_t manager = readAt<uintptr_t>((void*)SCORE_MANAGER_PTR, 0);
     if (!manager || vtableOf((void*)manager) != VT_SCORE_MANAGER) return;
-    const int team1 = readAt<int>((void*)manager, 0x10 + 1 * 0x50 + 0x48);
-    const int team2 = readAt<int>((void*)manager, 0x10 + 2 * 0x50 + 0x48);
+    int team1 = readAt<int>((void*)manager, 0x10 + 1 * 0x50 + 0x48);
+    int team2 = readAt<int>((void*)manager, 0x10 + 2 * 0x50 + 0x48);
     if (team1 == g_tickets[0] && team2 == g_tickets[1]) return;
     g_tickets[0] = team1;
     g_tickets[1] = team2;

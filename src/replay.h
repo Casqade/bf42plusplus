@@ -32,9 +32,10 @@ void replay_onFire(int playerId, bool isPrimary, bool isSecondary);
 // Close the current file, if any.
 void replay_stop();
 
-// Begin recording immediately (console: plus.recordReplays 1). Does nothing
-// when the setting is off or a file is already open.
-void replay_begin();
+// Open a replay file now, if the setting is on and none is open. Returns
+// whether a file is open afterwards. The console calls it when the user types
+// plus.recordReplays 1, so recording starts then, not on the next event/frame.
+bool replay_start();
 
 // Install the recorder's own code hooks (every round fired, FireArms::Fire).
 void replay_hook_init();

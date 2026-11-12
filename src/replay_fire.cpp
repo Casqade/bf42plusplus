@@ -18,7 +18,7 @@
 void replay_onFire(int playerId, bool isPrimary, bool isSecondary)
 {
     if (!replayFileOpen()) return;
-    const double t = replayNow();
+    double t = replayNow();
     Pos3 pos(0, 0, 0);
     Vec3 dir(0, 0, 1);
     std::string weaponName;

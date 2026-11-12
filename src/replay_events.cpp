@@ -98,7 +98,7 @@ size_t eventSize(int type)
         std::fill(std::begin(cache), std::end(cache), (int16_t)-1);
         cacheReady = true;
     }
-    const bool cacheable = type >= 0 && type < 256;
+    bool cacheable = type >= 0 && type < 256;
     if (cacheable && cache[type] >= 0) return (size_t)cache[type];
 
     size_t size = 0;
@@ -297,8 +297,8 @@ std::string createPlayerLine(GameEvent* event, double t)
 
 void recordEvent(GameEvent* event)
 {
-    const double t = replayNow();
-    const int type = event->getType();
+    double t = replayNow();
+    int type = event->getType();
     // Payload starts after vtable, sequenceNumber, nextEvent.
     const uint8_t* payload = (const uint8_t*)event + 12;
 
@@ -320,7 +320,7 @@ void recordEvent(GameEvent* event)
             auto ev = reinterpret_cast<ScoreMsgEvent*>(event);
             // A kill's weapon is the killing object's template id (the weapon
             // on foot, the hull when mounted); other kinds leave it unset.
-            const bool kill = ev->eventid == SE_KILL || ev->eventid == SE_TK;
+            bool kill = ev->eventid == SE_KILL || ev->eventid == SE_TK;
             std::string weaponName = kill && ev->weapon > 0 ? templateNameOf((uint32_t)ev->weapon) : std::string();
             writeLine(std::format("{{\"k\":\"e\",\"t\":{:.3f},\"e\":\"score\",\"kind\":{},\"pid\":{},\"victim\":{},\"weapon\":{},\"bodypart\":{}{}}}",
                 t, (uint32_t)ev->eventid, ev->playerid, ev->victimpid, ev->weapon, ev->bodypart,

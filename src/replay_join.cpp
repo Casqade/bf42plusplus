@@ -102,7 +102,7 @@ static void writeHeldInOrder(const std::map<Key, HeldRecord>& held, DWORD now)
 // is the join's, and moved to the file's start it would be wrong.
 void holdJoinEvent(GameEvent* event)
 {
-    const int type = event->getType();
+    int type = event->getType();
     std::string line;
     switch (type) {
         case BF_SetLevelEvent:
@@ -112,7 +112,7 @@ void holdJoinEvent(GameEvent* event)
         case 0x16:  // GameRulesEvent
         case 0x1A:  // ServerInfoEvent: the server's mod
         case 0x1B: {  // ServerInfoEvent2: the server's name
-            const size_t size = eventSize(type);
+            size_t size = eventSize(type);
             if (size) line = decodeEvent(type, (const uint8_t*)event + 12, size, 0.0);
             break;
         }
@@ -136,7 +136,7 @@ void holdJoinEvent(GameEvent* event)
 // takes its new place in the order.
 void holdObjectEvent(GameEvent* event)
 {
-    const int type = event->getType();
+    int type = event->getType();
     const uint8_t* payload = (const uint8_t*)event + 12;
     switch (type) {
         case BF_CreatePlayerEvent: {
@@ -145,15 +145,15 @@ void holdObjectEvent(GameEvent* event)
             break;
         }
         case BF_CreateObjectEvent: {
-            const uint16_t id = reinterpret_cast<CreateObjectEvent*>(event)->objectNetId;
+            uint16_t id = reinterpret_cast<CreateObjectEvent*>(event)->objectNetId;
             g_heldCreates[id] = HeldRecord{ g_heldOrder++, GetTickCount(), id, createObjectLine(event, 0.0) };
             break;
         }
         case 0x05: {  // CreateMultipleObjectsEvent: a kit's projectile pool
-            const size_t size = eventSize(type);
+            size_t size = eventSize(type);
             std::string line = size ? decodeEvent(type, payload, size, 0.0) : std::string();
             if (line.empty()) break;
-            const uint16_t first = readAt<uint16_t>(payload, 4);
+            uint16_t first = readAt<uint16_t>(payload, 4);
             g_heldPools[first] = HeldRecord{ g_heldOrder++, GetTickCount(), first, std::move(line) };
             break;
         }
@@ -163,14 +163,14 @@ void holdObjectEvent(GameEvent* event)
             break;
         }
         case BF_DestroyObjectEvent: {
-            const uint16_t id = reinterpret_cast<DestroyObjectEvent*>(event)->objectNetId;
+            uint16_t id = reinterpret_cast<DestroyObjectEvent*>(event)->objectNetId;
             g_heldCreates.erase(id);
             g_heldPools.erase(id);
             std::erase_if(g_heldKits, [id](const auto& kv) { return kv.second.netId == id; });
             break;
         }
         case BF_DestroyPlayerEvent: {
-            const int pid = reinterpret_cast<DestroyPlayerEvent*>(event)->playerid;
+            int pid = reinterpret_cast<DestroyPlayerEvent*>(event)->playerid;
             g_heldPlayers.erase(pid);
             g_heldKits.erase(pid);
             break;
@@ -197,7 +197,7 @@ void writeHeldJoin()
 {
     if (g_heldJoin.empty() && g_heldPlayers.empty() && g_heldCreates.empty() && g_heldPools.empty()
         && g_heldKits.empty()) return;
-    const DWORD now = GetTickCount();
+    DWORD now = GetTickCount();
     for (const auto& held : g_heldJoin) writeHeld(held.line, held.tick, now);
     writeHeldInOrder(g_heldPlayers, now);
     writeHeldInOrder(g_heldCreates, now);

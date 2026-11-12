@@ -143,7 +143,7 @@ static int childIdOf(const void* obj, uint16_t root, const void* tmpl, bool& fir
     auto it = g_childIds.find(obj);
     first = it == g_childIds.end() || it->second.root != root || it->second.tmpl != tmpl;
     if (!first) return it->second.id;
-    const int id = g_nextChildId++;
+    int id = g_nextChildId++;
     g_childIds[obj] = ChildId{ id, root, tmpl };
     return id;
 }
@@ -152,7 +152,7 @@ static int childIdOf(const void* obj, uint16_t root, const void* tmpl, bool& fir
 // Y and Z axes toQuat reads.
 static Pos3 localPosition(const Mat4& m, const Pos3& p)
 {
-    const float dx = p.x - m.position.x, dy = p.y - m.position.y, dz = p.z - m.position.z;
+    float dx = p.x - m.position.x, dy = p.y - m.position.y, dz = p.z - m.position.z;
     return Pos3(dx * m.a.x + dy * m.a.y + dz * m.a.z,
                 dx * m.b.x + dy * m.b.y + dz * m.b.z,
                 dx * m.c.x + dy * m.c.y + dz * m.c.z);
@@ -204,7 +204,7 @@ static void writeAnimStates(double t)
     // Say so in the file rather than returning in silence: without the table
     // a reader cannot interpret the `st` rows, and a file that states its own
     // refusal costs one line and tells the reader why.
-    const size_t count = (size_t)((end - begin) / 4);
+    size_t count = (size_t)((end - begin) / 4);
     if (count > MAX_ANIM_STATES) {
         writeLine(std::format(
             "{{\"k\":\"anim\",\"t\":{:.3f},\"skipped\":{},\"limit\":{},\"states\":[]}}",
@@ -216,7 +216,7 @@ static void writeAnimStates(double t)
     for (uintptr_t at = begin; at < end; at += 4) {
         uintptr_t state = readAt<uintptr_t>((void*)at, 0);
         if (!state) continue;
-        const int index = (int)((at - begin) / 4);
+        int index = (int)((at - begin) / 4);
         if (!out.empty()) out += ',';
         out += std::format("[{},\"{}\",{}]", index, readEngineString((void*)(state + 0x130)), readAt<uint32_t>((void*)state, 0x2C));
     }
@@ -232,19 +232,19 @@ void sampleParts(double t)
     for (auto node = allObjs.head->left; node != allObjs.head; node = node->next()) {
         auto obj = node->pair.second;
         if (!obj) continue;
-        const uint32_t flags = obj->getFlags();
+        uint32_t flags = obj->getFlags();
         if (flags & 1) continue;   // disabled
         auto net = obj->getNetworkable();
         if (!net) continue;
-        const uintptr_t vt = vtableOf(obj);
-        const bool root = (flags & 0x02000000) != 0;
+        uintptr_t vt = vtableOf(obj);
+        bool root = (flags & 0x02000000) != 0;
 
         if (root && vt == VT_SOLDIER) {
             SoldierState s{
                 readAt<int>(obj, 0x2E0), readAt<int>(obj, 0x324), readAt<uint8_t>(obj, 0x3E8),
                 readAt<uint16_t>(obj, 0x416), readAt<float>(obj, 0x2B0), readAt<float>(obj, 0x2B4),
             };
-            const uint16_t id = net->getID();
+            uint16_t id = net->getID();
             auto prev = g_soldiers.find(id);
             if (prev != g_soldiers.end() && prev->second.lower == s.lower && prev->second.upper == s.upper
                 && prev->second.item == s.item && prev->second.bits == s.bits
@@ -262,16 +262,16 @@ void sampleParts(double t)
             if (!topNet || top == obj) continue;
             const Mat4& topM = top->getAbsoluteTransformation();
             const Mat4& partM = obj->getAbsoluteTransformation();
-            const Quat rel = quatMultiply(quatConjugate(toQuat(topM)), toQuat(partM));
-            const uint16_t rootId = (uint16_t)topNet->getID();
+            Quat rel = quatMultiply(quatConjugate(toQuat(topM)), toQuat(partM));
+            uint16_t rootId = (uint16_t)topNet->getID();
             auto tmpl = obj->getTemplate();
             bool first = false;
-            const int id = childIdOf(obj, rootId, tmpl, first);
+            int id = childIdOf(obj, rootId, tmpl, first);
             if (first) {
                 // Named on first sight, with where it sits on its root: a
                 // viewer finds the part in the root's model by its template's
                 // name, and among same-named parts (a ship's AA guns) by place.
-                const Pos3 at = localPosition(topM, partM.position);
+                Pos3 at = localPosition(topM, partM.position);
                 if (!jointNames.empty()) jointNames += ',';
                 jointNames += std::format("[{},{},\"{}\",{:.2f},{:.2f},{:.2f}]", rootId, id,
                     tmpl ? jsonEscape(std::string(tmpl->getName())) : std::string(), at.x, at.y, at.z);
@@ -297,9 +297,9 @@ void sampleParts(double t)
                 (readAt<uint8_t>(obj, 0x15C) ? 1 : 0) | (readAt<uint8_t>(obj, 0x15D) ? 2 : 0),
                 readAt<int>((void*)pe, 0xBC),
             };
-            const uint16_t rootId = (uint16_t)topNet->getID();
+            uint16_t rootId = (uint16_t)topNet->getID();
             bool first = false;
-            const int id = childIdOf(obj, rootId, obj->getTemplate(), first);
+            int id = childIdOf(obj, rootId, obj->getTemplate(), first);
             auto prev = g_engines.find(id);
             if (!first && prev != g_engines.end() && fabsf(prev->second.revs - e.revs) < 0.01f
                 && fabsf(prev->second.throttle - e.throttle) < 0.01f && prev->second.flags == e.flags
