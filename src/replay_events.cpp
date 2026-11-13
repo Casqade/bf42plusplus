@@ -327,14 +327,6 @@ void recordEvent(GameEvent* event)
                 weaponName.empty() ? std::string() : std::format(",\"weaponName\":\"{}\"", weaponName)));
             break;
         }
-        case BF_ChatFragmentEvent: {
-            auto ev = reinterpret_cast<ChatFragmentEvent*>(event);
-            size_t len = ev->textLength > sizeof(ev->text) ? sizeof(ev->text) : ev->textLength;
-            writeLine(std::format("{{\"k\":\"e\",\"t\":{:.3f},\"e\":\"chat\",\"pid\":{},\"first\":{},\"global\":{},\"server\":{},\"total\":{},\"text\":\"{}\"}}",
-                t, ev->senderID, ev->firstFragment ? 1 : 0, ev->broadcast ? 1 : 0, ev->serverMessage ? 1 : 0,
-                ev->totalLength, jsonEscape(ev->text, len)));
-            break;
-        }
         case BF_RadioMessageEvent: {
             auto ev = reinterpret_cast<RadioMessageEvent*>(event);
             writeLine(std::format("{{\"k\":\"e\",\"t\":{:.3f},\"e\":\"radio\",\"pid\":{},\"msg\":{},\"global\":{}}}",
@@ -402,6 +394,10 @@ void recordEvent(GameEvent* event)
         case BF_CreateStaticObjectEvent:
         case BF_UpdateStaticObjectEvent:
             // bf42plus extensions and HUD text, not replay material.
+            break;
+        case BF_ChatFragmentEvent:
+            // Chat comes from the chat box instead (replay_onChat): it has every
+            // line these pieces make, whole, plus the recording player's own.
             break;
         default: {
             size_t size = eventSize(type);

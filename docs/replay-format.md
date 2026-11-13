@@ -394,10 +394,10 @@ hitch can make a mark that was not there.
 {"k":"chat","t":37.774,"pid":4,"team":2,"text":"Player1 [allies]: f2 flag"}
 ```
 
-Every line the chat box shows. `text` is the line as shown, with the speaker's name in front as the
-game writes it. This includes the recording player's own chat, which the server never sends back
-as a `chat` event. `pid` is the speaker, or -1 for a line no player said, such as a server
-message. `team` is the team whose colour the line is drawn in. Radio messages are not here; they
+Every line the chat box shows, and the only record of chat. `text` is the line as shown, with the
+speaker's name in front as the game writes it, and a team message's side after the name. This
+includes the recording player's own chat, which the server never sends back to him. `pid` is the
+speaker, or -1 for a line no player said, such as a server message. `team` is the team whose colour the line is drawn in. Radio messages are not here; they
 are `radio` events.
 
 ### `roster`: who is playing
@@ -459,7 +459,6 @@ rest is not recorded.
 | `exitVehicle` | 0x0B | `pid` got out. The exits the server sends while tearing a round down are not recorded. |
 | `pickupKit` | 0x23 | `pid` took the kit `netId`. A player who had already spawned at the join gets none: his kit is his `createPlayer` `kitNetId`. |
 | `score` | 0x2A | `kind`, `pid`, `victim`, `weapon`, `bodypart`, and `weaponName` for a kill. See below. |
-| `chat` | 0x28 | A piece of a chat message: `pid` (-1 the server), `first` (1 for a message's first piece), `global` (1 everyone, 0 team), `server` (1 a server message), `total` (the whole message's length) and `text` (this piece, up to 16 characters). A message is its pieces joined from the `first` one until `total` characters. The recording player's own messages never arrive; the `chat` record has every line. |
 | `radio` | 0x3A | `pid`, `msg` the message (below), `global` (1 over the team radio, 0 shouted to anyone within about 70 m) |
 | `hitFrom` | 0x3C | The recording player was hurt, or the vehicle he is in was hit. `dir`, the side it came from, below; `strength`, 255 × the damage ÷ his full hit points. |
 | `fire` | | The recording player, `pid`, pressed fire, from his own input: one per press, not per round. `kind` 1 fire, 2 alternate fire alone (zooming in shows as 2); `weapon`, the template of what he controls, not the weapon; `pos` and `dir`, its position and +Z axis, `[0,0,0]` and `[0,0,1]` when he controls nothing. `f` has every round. |
