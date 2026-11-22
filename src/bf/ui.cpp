@@ -3,6 +3,7 @@
 
 #include "../hooks.h"
 #include "../settings.h"
+#include "../replay.h"
 
 #include <intrin.h>
 
@@ -165,6 +166,9 @@ void BfMenu::addPlayerChatMessage_hook(bfs::wstring message, BFPlayer* player, i
             reset = true;
         }
     }
+    int pid = getCurrentMessagePID();
+    if (pid < 0 && player) pid = player->getId();
+    replay_onChat(message.data(), message.size(), pid, team);
     addPlayerChatMessage(message, player, team);
     if (reset) {
         setCurrentMessagePID(-1);

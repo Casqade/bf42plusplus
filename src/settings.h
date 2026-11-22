@@ -255,6 +255,13 @@ public:
         L";       Compatibility with consoleProfiler is not guaranteed.",
         0, false };
 #endif
+    BoolSetting recordReplays = {
+        L"general", L"recordReplays",
+        L"; Records gameplay to replays/replay_<timestamp>.ndjson\n"
+        L"; plus.recordReplays 1 will start recording. The setting is remembered between reconnects.\n"
+        L"; plus.recordReplays 0 will stop recording.\n"
+        L"; Recordings can be watched at https://replay.bfstats.io",
+        0, false };
 };
 
 extern Settings g_settings;
