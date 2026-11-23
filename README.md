@@ -4,7 +4,7 @@ bf42++ is a successor to discontinued [bf42plus](https://github.com/uuuzbf/bf42p
 
 This mod provides several [fixes](#bugfixes) and [improvements](#improvements) to Battlefield 1942. It also has some [additional features](#optional-features) however these are all disabled by default. It is also possible to [set custom colors](#buddy-colors) for players on the buddy list.
 
-The current version is `2.0`. You can see your version in the main menu in the bottom left corner.
+The current version is `2.1`. You can see your version in the main menu in the bottom left corner.
 
 ### Installation
 
