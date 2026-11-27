@@ -151,12 +151,13 @@ the `s` that carries its first position.
 ### `h`: header
 
 ```json
-{"k":"h","v":5,"plus":"2.0","build":"Oct 16 2026 21:14:03","start":"2026-10-17T07:00:41","hz":10}
+{"k":"h","v":5,"game":"bf1942","plus":"2.0","build":"Oct 16 2026 21:14:03","start":"2026-10-17T07:00:41","hz":10}
 ```
 
 | field | |
 | --- | --- |
 | `v` | format version |
+| `game` | the game the file is of, always `bf1942`. A file from before it was written has none, which reads the same. |
 | `plus` | the bf42++ version. It is not changed for every build. |
 | `build` | when the DLL was compiled, which tells two recorders apart |
 | `start` | local time the file opened, no time zone |
