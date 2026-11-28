@@ -145,8 +145,10 @@ bool replay_start()
     // `plus` is the marketing version out of version.h, bumped by hand and
     // neither stamped by CI nor tied to a commit, so it cannot answer "which
     // recorder wrote this". `build` can -- the compiler stamps it per build, so
-    // a file says whether it predates a given recorder change.
-    writeLine(std::format("{{\"k\":\"h\",\"v\":{},\"plus\":\"{}\",\"build\":\"{}\",\"start\":\"{}\",\"hz\":{}}}",
+    // a file says whether it predates a given recorder change. `game` says which
+    // game the file is of: bfstats keeps BF1942's and Battlefield Vietnam's
+    // recordings apart, and reads a file with no `game` as BF1942.
+    writeLine(std::format("{{\"k\":\"h\",\"v\":{},\"game\":\"bf1942\",\"plus\":\"{}\",\"build\":\"{}\",\"start\":\"{}\",\"hz\":{}}}",
         FORMAT_VERSION, jsonEscape(WideStringToISO88591(build_version)),
         jsonEscape(__DATE__ " " __TIME__), iso, SAMPLE_HZ));
     g_fileHasContent = false;
